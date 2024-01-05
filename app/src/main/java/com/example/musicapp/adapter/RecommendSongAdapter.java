@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,20 +38,25 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
         if(song != null) {
 
             Glide.with(holder.pictureSong.getContext())
-                    .load(String.valueOf(song.getPicture()))
+                    .load(String.valueOf(song.getArtist().getPicture()))
                     .override(50, 50)
                     .into(holder.pictureSong);
 
             holder.titleSong.setText(String.valueOf(song.getTitle()));
-            holder.artistSong.setText(String.valueOf(song.getArtist()));
+            holder.artistSong.setText(String.valueOf(song.getArtist().getName()));
+
+            holder.btnAddIntoFavourite.setOnClickListener(view -> {
+                Toast.makeText(view.getContext(), "Add into favourite list", Toast.LENGTH_LONG).show();
+            });
 
         }
     }
 
     @Override
     public int getItemCount() {
-        if(listSong != null) return listSong.size();
-        return 0;
+        if (listSong != null && listSong.size() < 8) return listSong.size();
+        if(listSong == null) return 0;
+        return 7;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
@@ -59,12 +65,15 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
         public TextView titleSong;
         public TextView artistSong;
 
+        public ImageView btnAddIntoFavourite;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             pictureSong = itemView.findViewById(R.id.picture_song_recommend);
             titleSong = itemView.findViewById(R.id.title_song_recommend);
             artistSong = itemView.findViewById(R.id.artist_song_recommend);
+            btnAddIntoFavourite = itemView.findViewById(R.id.btn_add_into_favorite);
         }
     }
 }

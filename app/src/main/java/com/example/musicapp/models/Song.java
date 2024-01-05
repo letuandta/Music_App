@@ -1,20 +1,26 @@
 package com.example.musicapp.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class Song {
+    @SerializedName("title")
     private String title;
+    @SerializedName("duration")
     private int duration;
+    @SerializedName("preview")
     private String preview;
-    private String picture;
-    private String artist;
+    @SerializedName("artist")
+    @Expose
+    private Artist artist;
 
     public Song() {
     }
 
-    public Song(String title, int duration, String preview, String picture, String artist) {
+    public Song(String title, int duration, String preview, Artist artist) {
         this.title = title;
         this.duration = duration;
         this.preview = preview;
-        this.picture = picture;
         this.artist = artist;
     }
 
@@ -42,19 +48,13 @@ public class Song {
         this.preview = preview;
     }
 
-    public String getPicture() {
-        return picture;
-    }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 
-    public String getArtist() {
+    public Artist getArtist() {
         return artist;
     }
 
-    public void setArtist(String artist) {
+    public void setArtist(Artist artist) {
         this.artist = artist;
     }
 }

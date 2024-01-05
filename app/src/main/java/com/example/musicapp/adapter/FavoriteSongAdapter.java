@@ -37,19 +37,20 @@ public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapte
         if(song != null) {
 
             Glide.with(holder.pictureSong.getContext())
-                    .load(String.valueOf(song.getPicture()))
+                    .load(String.valueOf(song.getArtist().getPicture()))
                     .override(120, 120)
                     .into(holder.pictureSong);
 
             holder.titleSong.setText(String.valueOf(song.getTitle()));
-            holder.artistSong.setText(String.valueOf(song.getArtist()));
+            holder.artistSong.setText(String.valueOf(song.getArtist().getName()));
         }
     }
 
     @Override
     public int getItemCount() {
-        if (listSong != null) return listSong.size();
-        return 0;
+        if (listSong != null && listSong.size() < 8) return listSong.size();
+        if(listSong == null) return 0;
+        return 7;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
