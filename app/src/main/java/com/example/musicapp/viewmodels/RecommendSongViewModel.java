@@ -3,8 +3,7 @@ package com.example.musicapp.viewmodels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.musicapp.Api.ApiService;
-import com.example.musicapp.fakedata.FakeData;
+import com.example.musicapp.Api.ApiClient;
 import com.example.musicapp.models.Data;
 import com.example.musicapp.models.Song;
 import com.example.musicapp.repositories.SongRepository;
@@ -24,7 +23,7 @@ public class RecommendSongViewModel extends ViewModel {
     }
 
     private void initData() {
-        ApiService.apiService.getSong("you")
+        SongRepository.callApi.getSong("you")
                 .enqueue(new Callback<Data>() {
                     @Override
                     public void onResponse(Call<Data> call, Response<Data> response) {

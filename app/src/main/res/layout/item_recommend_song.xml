@@ -1,52 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/background"
-    android:layout_marginTop="5dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <ImageView
-        android:id="@+id/picture_song_recommend"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_launcher_background"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
+<layout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_toEndOf="@id/picture_song_recommend"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="10dp">
+        android:background="@color/background"
+        android:layout_marginTop="5dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <TextView
-            android:id="@+id/title_song_recommend"
+        <ImageView
+            android:id="@+id/picture_song_recommend"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_launcher_background"/>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="Title song"
-            android:textColor="@color/white"
-            android:textStyle="bold"/>
+            android:orientation="vertical"
+            android:layout_toEndOf="@id/picture_song_recommend"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp">
 
-        <TextView
-            android:id="@+id/artist_song_recommend"
+            <TextView
+                android:id="@+id/title_song_recommend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="Title song"
+                android:textColor="@color/white"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/artist_song_recommend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="artist song"
+                android:textColor="@color/white"
+                android:textStyle="normal"/>
+
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/btn_add_into_favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="artist song"
-            android:textColor="@color/white"
-            android:textStyle="normal"/>
+            android:src="@drawable/add_24"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="add into favorite list"
+            app:tint="@color/white"/>
 
-    </LinearLayout>
-    <ImageView
-        android:id="@+id/btn_add_into_favorite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/add_24"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:contentDescription="add into favorite list"
-        app:tint="@color/white"/>
-
-</RelativeLayout>
+    </RelativeLayout>
+</layout>

@@ -3,7 +3,13 @@ package com.example.musicapp.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Artist {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class Artist extends RealmObject {
+
+    @PrimaryKey
+    private long _id;
     @SerializedName("picture_medium")
     @Expose
     private String picture;
@@ -17,6 +23,14 @@ public class Artist {
     public Artist(String picture, String name) {
         this.picture = picture;
         this.name = name;
+    }
+
+    public long get_id() {
+        return _id;
+    }
+
+    public void set_id(long _id) {
+        this._id = _id;
     }
 
     public String getPicture() {

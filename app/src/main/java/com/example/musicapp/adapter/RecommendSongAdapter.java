@@ -1,5 +1,6 @@
 package com.example.musicapp.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
+import com.example.musicapp.databinding.ItemRecommendSongBinding;
 import com.example.musicapp.models.Song;
+import com.example.musicapp.repositories.FavoritesRepository;
 
 import java.util.List;
 
@@ -27,8 +30,8 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend_song, parent, false);
-        return new ViewHolder(view);
+        ItemRecommendSongBinding binding = ItemRecommendSongBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -37,16 +40,21 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
 
         if(song != null) {
 
-            Glide.with(holder.pictureSong.getContext())
+            Glide.with(holder.binding.pictureSongRecommend.getContext())
                     .load(String.valueOf(song.getArtist().getPicture()))
                     .override(50, 50)
-                    .into(holder.pictureSong);
+                    .into(holder.binding.pictureSongRecommend);
 
-            holder.titleSong.setText(String.valueOf(song.getTitle()));
-            holder.artistSong.setText(String.valueOf(song.getArtist().getName()));
+            holder.binding.titleSongRecommend.setText(String.valueOf(song.getTitle()));
+            holder.binding.artistSongRecommend.setText(String.valueOf(song.getArtist().getName()));
 
-            holder.btnAddIntoFavourite.setOnClickListener(view -> {
-                Toast.makeText(view.getContext(), "Add into favourite list", Toast.LENGTH_LONG).show();
+            holder.binding.btnAddIntoFavorite.setOnClickListener(view -> {
+               try {
+                   FavoritesRepository.addSong(song);
+                   Toast.makeText(view.getContext(), "Add song into favorites list success", Toast.LENGTH_LONG).show();
+               }catch (Exception e){
+                   Log.e("FAVORITES LIST", "can't add song into favorites list");
+               }
             });
 
         }
@@ -60,20 +68,11 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
+        ItemRecommendSongBinding binding;
 
-        public ImageView pictureSong;
-        public TextView titleSong;
-        public TextView artistSong;
-
-        public ImageView btnAddIntoFavourite;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            pictureSong = itemView.findViewById(R.id.picture_song_recommend);
-            titleSong = itemView.findViewById(R.id.title_song_recommend);
-            artistSong = itemView.findViewById(R.id.artist_song_recommend);
-            btnAddIntoFavourite = itemView.findViewById(R.id.btn_add_into_favorite);
+        public ViewHolder(@NonNull ItemRecommendSongBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }
