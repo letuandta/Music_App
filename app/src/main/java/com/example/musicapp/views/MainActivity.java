@@ -1,13 +1,16 @@
 package com.example.musicapp.views;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -47,6 +50,10 @@ public class MainActivity extends AppCompatActivity  {
                 .add(R.id.fragment_favorites_song, FavoritesFragment.newInstance(), "fragment_favorites")
                 .add(R.id.fragment_recommend_song, RecommendsFragment.newInstance(), "fragment_recommend")
                 .commit();
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 111);
+        }
 
     }
 

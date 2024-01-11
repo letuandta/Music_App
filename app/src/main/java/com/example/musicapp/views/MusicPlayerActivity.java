@@ -189,13 +189,13 @@ public class MusicPlayerActivity extends AppCompatActivity {
     }
 
     private void previousMusic() {
-        startMusic();
         handler.removeCallbacks(seekBarRunnable);
+        startMusic();
     }
 
     private void nextMusic() {
-        startMusic();
         handler.removeCallbacks(seekBarRunnable);
+        startMusic();
     }
 
     private void playOrPause() {

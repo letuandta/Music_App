@@ -1,5 +1,6 @@
 package com.example.musicapp.services;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -80,7 +81,7 @@ public class MusicPlayerService extends Service {
                 songs = gson.fromJson(bundle.getString("songs"), listSong);
                 position = bundle.getInt("position");
 
-                if(mediaPlayer == null) {
+                if (mediaPlayer == null) {
                     mediaPlayer = new MediaPlayer();
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     mediaPlayer.setLooping(false);
@@ -118,9 +119,9 @@ public class MusicPlayerService extends Service {
         remoteViewsLarge.setTextViewText(R.id.artist_song, song.getArtist().getName());
         remoteViewsLarge.setOnClickPendingIntent(R.id.icon_play_pause, getPendingIntent(getApplicationContext(), ACTION_PLAY_OR_PAUSE));
 
-        if(isPlaying){
+        if (isPlaying) {
             remoteViewsLarge.setImageViewResource(R.id.icon_play_pause, R.drawable.pause_24);
-        }else{
+        } else {
             remoteViewsLarge.setImageViewResource(R.id.icon_play_pause, R.drawable.play_arrow_24);
         }
 
@@ -138,10 +139,11 @@ public class MusicPlayerService extends Service {
 
         startForeground(NOTIFICATION_ID, builder);
 
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+
             return;
         }
-
         NotificationTarget notificationTarget = new NotificationTarget(
                 getApplicationContext(),
                 R.id.picture_song,
@@ -163,7 +165,7 @@ public class MusicPlayerService extends Service {
         bundle.putInt("action_music", action);
         intent.putExtras(bundle);
 
-        return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     private void sendIntentToActivity(int action){
