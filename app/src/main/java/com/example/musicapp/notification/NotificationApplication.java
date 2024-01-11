@@ -16,7 +16,7 @@ public class NotificationApplication extends Application {
         createChannelNotification();
     }
 
-    private void createChannelNotification() {
+    public void createChannelNotification() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
                     "channel for music player", NotificationManager.IMPORTANCE_DEFAULT);

@@ -1,6 +1,8 @@
 package com.example.musicapp.services;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -43,6 +46,8 @@ public class MusicPlayerService extends Service {
     public static final int ACTION_CHANGE_SHUFFLE = 6;
     public static final int ACTION_CHANGE_LOOPING = 7;
     public static final int ACTION_SKIP = 8;
+
+    public static final String CHANNEL_ID = "music_channel";
 
     Gson gson = new Gson();
     List<Song> songs;
@@ -123,7 +128,9 @@ public class MusicPlayerService extends Service {
         remoteViewsLarge.setOnClickPendingIntent(R.id.icon_next, getPendingIntent(getApplicationContext(), ACTION_NEXT));
         remoteViewsLarge.setOnClickPendingIntent(R.id.icon_previous, getPendingIntent(getApplicationContext(), ACTION_PREVIOUS));
 
-        Notification builder = new NotificationCompat.Builder(this, NotificationApplication.CHANNEL_ID)
+        createChannelNotification();
+
+        Notification builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setCustomBigContentView(remoteViewsLarge)
                 .setSound(null)
@@ -256,6 +263,21 @@ public class MusicPlayerService extends Service {
         }else if (position == 0){
             position = songs.size() - 1;
             playMusic();
+        }
+    }
+
+    public void createChannelNotification() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
+                    "channel for music player", NotificationManager.IMPORTANCE_DEFAULT);
+
+            notificationChannel.setSound(null, null);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+
+            if(manager != null){
+                manager.createNotificationChannel(notificationChannel);
+            }
         }
     }
 
