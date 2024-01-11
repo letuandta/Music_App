@@ -19,9 +19,11 @@ import java.util.List;
 public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapter.ViewHolder> {
 
     private List<Song> listSong;
+    private FavoritesSongListener listener;
 
-    public FavoriteSongAdapter(List<Song> listSong) {
+    public FavoriteSongAdapter(List<Song> listSong, FavoritesSongListener listener) {
         this.listSong = listSong;
+        this.listener = listener;
     }
 
     @NonNull
@@ -44,6 +46,10 @@ public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapte
 
             holder.binding.titleSong.setText(String.valueOf(song.getTitle()));
             holder.binding.artistSong.setText(String.valueOf(song.getArtist().getName()));
+
+            holder.binding.layoutFavoritesSong.setOnClickListener(view -> {
+                listener.onClickItem(position);
+            });
         }
     }
 
@@ -61,5 +67,9 @@ public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapte
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    public interface FavoritesSongListener{
+        void onClickItem(int position);
     }
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="5dp"
+    android:layout_height="48dp">
+
+    <ImageView
+        android:id="@+id/picture_song"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_centerVertical="true"
+        android:contentDescription="picturn_song">
+    </ImageView>
+
+    <LinearLayout
+        android:id="@+id/layout_song_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/picture_song"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="title songsafsfaffffffffffffffffffffffff"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:ellipsize="marquee"/>
+
+        <TextView
+            android:id="@+id/artist_song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="artist song"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:ellipsize="marquee"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btn_play_or_pause"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/play_arrow_24"
+        android:layout_toEndOf="@id/layout_song_info"
+        android:layout_toStartOf="@id/btn_close"/>
+
+    <ImageView
+        android:id="@+id/btn_close"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/clear_24"
+        app:tint="@color/black"
+        android:layout_alignParentEnd="true"/>
+
+</RelativeLayout>

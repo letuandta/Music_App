@@ -30,6 +30,10 @@ public class LiveRealmResults<T extends RealmModel > extends MutableLiveData<Lis
         }
     }
 
+    public RealmResults<T> getRealmResults(){
+        return results;
+    }
+
     @Override
     protected void onActive() {
         super.onActive();

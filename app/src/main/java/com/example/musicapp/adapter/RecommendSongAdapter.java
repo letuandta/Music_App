@@ -22,9 +22,11 @@ import java.util.List;
 public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdapter.ViewHolder>{
 
     private List<Song> listSong;
+    private RecommendsSongListener listener;
 
-    public RecommendSongAdapter(List<Song> listSong) {
+    public RecommendSongAdapter(List<Song> listSong, RecommendsSongListener listener) {
         this.listSong = listSong;
+        this.listener = listener;
     }
 
     @NonNull
@@ -57,6 +59,10 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
                }
             });
 
+            holder.binding.layoutRecommendsSong.setOnClickListener(view -> {
+                listener.onClickRecommendItem(position);
+            });
+
         }
     }
 
@@ -74,5 +80,9 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    public interface RecommendsSongListener{
+        void onClickRecommendItem(int position);
     }
 }

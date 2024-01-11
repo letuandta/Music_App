@@ -3,21 +3,22 @@ package com.example.musicapp.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Song extends RealmObject {
+public class Song extends RealmObject implements Serializable {
 
     @PrimaryKey
     private long _id;
-    @SerializedName("title")
+
     private String title;
-    @SerializedName("duration")
+
     private int duration;
-    @SerializedName("preview")
+
     private String preview;
-    @SerializedName("artist")
-    @Expose
+
     private Artist artist;
 
     public Song() {
@@ -71,4 +72,5 @@ public class Song extends RealmObject {
     public void setArtist(Artist artist) {
         this.artist = artist;
     }
+
 }
