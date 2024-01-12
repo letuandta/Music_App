@@ -3,6 +3,7 @@ package com.example.musicapp.views;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
@@ -28,15 +29,9 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FavoritesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.FavoritesSongListener{
 
     FragmentFavoritesBinding binding;
-    RecyclerView rcvFavoriteSong;
     private FavoriteSongAdapter favoriteSongAdapter;
     private FavoriteSongViewModel favoriteSongViewModel;
 
@@ -52,31 +47,41 @@ public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.F
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentFavoritesBinding.inflate(inflater, container, false);
-        rcvFavoriteSong = binding.rcvFavoriteSong;
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        favoriteSongViewModel = new ViewModelProvider(this).get(FavoriteSongViewModel.class);
-
-        favoriteSongViewModel.getLiveRealmResults().observe(getViewLifecycleOwner(), songs -> {
-            favoriteSongAdapter = new FavoriteSongAdapter(songs, this);
-            rcvFavoriteSong.setAdapter(favoriteSongAdapter);
-        });
+        inflateBinding(inflater, container);
+        initViewModel();
+        initAdapter();
+        observerDataInViewModel();
+        setAdapterForRecycleView();
 
         return binding.getRoot();
     }
 
+    private void inflateBinding(LayoutInflater inflater, ViewGroup container){
+        binding = FragmentFavoritesBinding.inflate(inflater, container, false);
+    }
+    private void initViewModel() {
+        favoriteSongViewModel = new ViewModelProvider(this).get(FavoriteSongViewModel.class);
+    }
+    private void initAdapter(){
+        favoriteSongAdapter = new FavoriteSongAdapter(this);
+    };
+    private void observerDataInViewModel(){
+        favoriteSongViewModel.getLiveRealmResults().observe(getViewLifecycleOwner(), songs -> {
+            Log.e("TAG", "observerDataInViewModel: ");
+            favoriteSongAdapter.submitList(songs);
+        });
+    }
+    private void setAdapterForRecycleView(){
+        binding.rcvFavoriteSong.setAdapter(favoriteSongAdapter);
+    }
     @Override
     public void onClickItem(int position) {
         Bundle bundle = new Bundle();
-        RealmResults<Song> songsRealm =  favoriteSongViewModel.getLiveRealmResults().getRealmResults();
-        List<Song> songs = realm.copyFromRealm(songsRealm);
-        Type listSong = new TypeToken<List<Song>>() {}.getType();
-        String songJson = gson.toJson(songs, listSong);
-        bundle.putString("songs", songJson);
+
+        bundle.putString("type", "favorites_song");
         bundle.putInt("position", position);
-        Log.e("TAG", "onTouchEvent: ");
 
         Intent intent = new Intent(getContext(), MusicPlayerActivity.class);
         intent.putExtras(bundle);

@@ -1,14 +1,14 @@
 package com.example.musicapp.views;
 
 
-import static com.example.musicapp.services.MusicPlayerService.ACTION_CHANGE_LOOPING;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_CHANGE_SHUFFLE;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_NEXT;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_PLAY_OR_PAUSE;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_PREVIOUS;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_SKIP;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_START;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_STOP;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_LOOPING;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_SHUFFLE;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_NEXT;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_PREVIOUS;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_SKIP;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_START;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_STOP;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.SeekBar;
 
 import androidx.annotation.Nullable;
@@ -71,53 +73,47 @@ public class MusicPlayerActivity extends AppCompatActivity {
         this.startService(intent);
 
         binding.iconNext.setOnClickListener(view -> {
-            Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("action_music", ACTION_NEXT);
-            intentService.putExtras(bundle);
-            this.startService(intentService);
+            handleOnClickIcon(ACTION_NEXT);
         });
 
         binding.iconPrevious.setOnClickListener(view -> {
-            Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("action_music", ACTION_PREVIOUS);
-            intentService.putExtras(bundle);
-            this.startService(intentService);
+            handleOnClickIcon(ACTION_PREVIOUS);
         });
 
         binding.iconPlayPause.setOnClickListener(view -> {
-            Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("action_music", ACTION_PLAY_OR_PAUSE);
-            intentService.putExtras(bundle);
-            this.startService(intentService);
+           handleOnClickIcon(ACTION_PLAY_OR_PAUSE);
         });
 
         binding.seekBarSong.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
 
-                currentDuration = progress;
-                Bundle bundle = new Bundle();
-                bundle.putInt("action_music", ACTION_SKIP);
-                bundle.putInt("skip_duration", progress);
-                intentService.putExtras(bundle);
-                startService(intentService);
+                    currentDuration = progress;
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("action_music", ACTION_SKIP);
+                    bundle.putInt("skip_duration", progress);
+                    intentService.putExtras(bundle);
+                    startService(intentService);
+                }
             }
-
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });
 
+    }
+
+    private void handleOnClickIcon(int action){
+        Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("action_music", action);
+        intentService.putExtras(bundle);
+        this.startService(intentService);
     }
 
     private void handleLayoutMusic(int action){

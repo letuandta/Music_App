@@ -3,6 +3,7 @@ package com.example.musicapp.views;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,31 +51,42 @@ public class RecommendsFragment extends Fragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentRecommendsBinding.inflate(inflater, container, false);
-        rcvRecommendSong = binding.rcvRecommendSong;
+        inflateBinding(inflater, container);
+        initViewModel();
+        initAdapter();
+        observerDataInViewModel();
+        setAdapterForRecycleView();
 
-        recommendSongViewModel = new ViewModelProvider(this).get(RecommendSongViewModel.class);
-
-
-        recommendSongViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> {
-            recommendSongAdapter = new RecommendSongAdapter(songs, this);
-            rcvRecommendSong.setAdapter(recommendSongAdapter);
-        });
         return binding.getRoot();
+    }
+
+    private void inflateBinding(LayoutInflater inflater, ViewGroup container) {
+        binding = FragmentRecommendsBinding.inflate(inflater, container, false);
+    }
+    private void initViewModel() {
+        recommendSongViewModel = new ViewModelProvider(this).get(RecommendSongViewModel.class);
+        recommendSongViewModel.setContext(getContext());
+        recommendSongViewModel.initData();
+    }
+    private void initAdapter() {
+        recommendSongAdapter = new RecommendSongAdapter(this);
+    }
+    private void observerDataInViewModel() {
+        recommendSongViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> {
+            recommendSongAdapter.submitList(songs);
+        });
+    }
+    private void setAdapterForRecycleView() {
+        binding.rcvRecommendSong.setAdapter(recommendSongAdapter);
     }
 
     @Override
     public void onClickRecommendItem(int position) {
         Bundle bundle = new Bundle();
-        List<Song> songs = recommendSongViewModel.getMutableLiveData().getValue();
-        Type listSong = new TypeToken<List<Song>>() {}.getType();
-        String songJson = gson.toJson(songs, listSong);
-        bundle.putString("songs", songJson);
+        bundle.putString("type", "recommend_song");
         bundle.putInt("position", position);
-        Log.e("TAG", "onTouchEvent: ");
 
         Intent intent = new Intent(getContext(), MusicPlayerActivity.class);
         intent.putExtras(bundle);

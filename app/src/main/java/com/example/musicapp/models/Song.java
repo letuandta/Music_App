@@ -1,5 +1,7 @@
 package com.example.musicapp.models;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -73,4 +75,11 @@ public class Song extends RealmObject implements Serializable {
         this.artist = artist;
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj == null) return false;
+        if (obj.getClass() != this.getClass()) return false;
+        final Song other = (Song) obj;
+        return this._id == other.get_id();
+    }
 }

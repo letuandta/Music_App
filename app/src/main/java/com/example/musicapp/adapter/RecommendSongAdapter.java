@@ -9,6 +9,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,13 +21,11 @@ import com.example.musicapp.repositories.FavoritesRepository;
 
 import java.util.List;
 
-public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdapter.ViewHolder>{
-
-    private List<Song> listSong;
+public class RecommendSongAdapter extends ListAdapter<Song, RecommendSongAdapter.ViewHolder> {
     private RecommendsSongListener listener;
 
-    public RecommendSongAdapter(List<Song> listSong, RecommendsSongListener listener) {
-        this.listSong = listSong;
+    public RecommendSongAdapter(RecommendsSongListener listener){
+        super(DIFF_CALLBACK);
         this.listener = listener;
     }
 
@@ -38,7 +38,7 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Song song = listSong.get(position);
+        Song song = getItem(position);
 
         if(song != null) {
 
@@ -68,8 +68,7 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
 
     @Override
     public int getItemCount() {
-        if (listSong != null && listSong.size() < 8) return listSong.size();
-        if(listSong == null) return 0;
+        if (getCurrentList().size() < 8) return getCurrentList().size();
         return 7;
     }
 
@@ -81,6 +80,20 @@ public class RecommendSongAdapter extends RecyclerView.Adapter<RecommendSongAdap
             this.binding = binding;
         }
     }
+
+    public static final DiffUtil.ItemCallback<Song> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<Song>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull Song oldItem, @NonNull Song newItem) {
+                    return oldItem.get_id() == newItem.get_id();
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull Song oldItem, @NonNull Song newItem) {
+                    return oldItem.equals(newItem);
+                }
+            };
+
 
     public interface RecommendsSongListener{
         void onClickRecommendItem(int position);

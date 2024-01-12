@@ -18,8 +18,10 @@ import android.view.MotionEvent;
 import com.example.musicapp.R;
 import com.example.musicapp.adapter.FavoriteSongAdapter;
 import com.example.musicapp.adapter.RecommendSongAdapter;
+import com.example.musicapp.common.MusicPlayerActions;
 import com.example.musicapp.databinding.ActivityMainBinding;
 import com.example.musicapp.models.Song;
+import com.example.musicapp.services.MusicPlayerService;
 import com.example.musicapp.viewmodels.FavoriteSongViewModel;
 import com.example.musicapp.viewmodels.RecommendSongViewModel;
 import com.google.gson.Gson;
@@ -33,28 +35,47 @@ import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity  {
 
-
+    //<!-- region declare -->
     ActivityMainBinding binding;
-
     private FragmentManager fragmentManager;
+    //<!-- endregion -->
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        inflateBinding();
         setContentView(binding.getRoot());
+        addFragment();
+        requestPermissionsForApplication();
+    }
 
+    private void inflateBinding() {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+    }
+    private void addFragment() {
         fragmentManager = getSupportFragmentManager();
 
         fragmentManager.beginTransaction()
                 .add(R.id.fragment_favorites_song, FavoritesFragment.newInstance(), "fragment_favorites")
                 .add(R.id.fragment_recommend_song, RecommendsFragment.newInstance(), "fragment_recommend")
                 .commit();
+    }
+    private void requestPermissionsForApplication() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
 
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 111);
         }
-
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intentService = new Intent(MainActivity.this, MusicPlayerService.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("action_music", MusicPlayerActions.ACTION_STOP);
+        intentService.putExtras(bundle);
+        this.startService(intentService);
+        Log.e("TAG", "onDestroy: " );
+    }
 }

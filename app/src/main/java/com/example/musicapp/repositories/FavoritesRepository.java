@@ -6,6 +6,8 @@ import com.example.musicapp.models.Song;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class FavoritesRepository {
 
@@ -38,8 +40,11 @@ public class FavoritesRepository {
         });
     }
 
-    private List<Song> readData() {
-        List<Song> songs = realm.where(Song.class).findAll();
-        return songs;
+    public static List<Song> readData() {
+        RealmResults<Song> realmResult = realm.where(Song.class)
+                .sort("_id", Sort.DESCENDING)
+                .limit(10)
+                .findAll();
+        return (List<Song>) realm.copyFromRealm(realmResult);
     }
 }

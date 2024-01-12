@@ -1,9 +1,11 @@
 package com.example.musicapp.viewmodels;
 
+import android.content.Context;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.musicapp.Api.ApiClient;
+import com.example.musicapp.Api.SongService;
 import com.example.musicapp.models.Data;
 import com.example.musicapp.models.Song;
 import com.example.musicapp.repositories.SongRepository;
@@ -17,21 +19,26 @@ import retrofit2.Response;
 public class RecommendSongViewModel extends ViewModel {
     private final MutableLiveData<List<Song>> mutableLiveData;
 
-    public RecommendSongViewModel() {
-        mutableLiveData = new MutableLiveData<>();
-        initData();
+    public void setContext(Context context) {
+        this.context = context;
     }
 
-    private void initData() {
-        SongRepository.callApi.getSong("you")
+    private Context context;
+
+    public RecommendSongViewModel() {
+        mutableLiveData = new MutableLiveData<>();
+    }
+
+    public void initData() {
+        SongService.callApi.getSong("you")
                 .enqueue(new Callback<Data>() {
                     @Override
                     public void onResponse(Call<Data> call, Response<Data> response) {
                         Data data = response.body();
                         List<Song> songs = data.getData();
                         mutableLiveData.setValue(songs);
+                        SongRepository.setRecommendsSongToSharePreferences(context, songs);
                     }
-
                     @Override
                     public void onFailure(Call<Data> call, Throwable t) {
 

@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 import com.example.musicapp.services.MusicPlayerService;
 
-public class NotificationBroadcastReceiver extends BroadcastReceiver {
+public class MusicNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
