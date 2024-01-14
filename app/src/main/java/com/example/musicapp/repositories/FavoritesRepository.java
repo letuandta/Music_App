@@ -2,6 +2,7 @@ package com.example.musicapp.repositories;
 
 import com.example.musicapp.models.Artist;
 import com.example.musicapp.models.Song;
+import com.example.musicapp.realm.RealmDb;
 
 import java.util.List;
 
@@ -11,12 +12,11 @@ import io.realm.Sort;
 
 public class FavoritesRepository {
 
-    private static final Realm realm = Realm.getDefaultInstance();
 
     public static void addSong(Song song){
 
-        Number songId = realm.where(Song.class).max("_id");
-        Number artistId = realm.where(Artist.class).max("_id");
+        Number songId = RealmDb.favoriteRealm.where(Song.class).max("_id");
+        Number artistId = RealmDb.favoriteRealm.where(Artist.class).max("_id");
         long nextSongId;
         long nextArtistId;
 
@@ -35,16 +35,16 @@ public class FavoritesRepository {
         song.set_id(nextSongId);
         song.getArtist().set_id(nextArtistId);
 
-        realm.executeTransaction(r -> {
-            realm.insert(song);
+        RealmDb.favoriteRealm.executeTransaction(r -> {
+            RealmDb.favoriteRealm.insert(song);
         });
     }
 
     public static List<Song> readData() {
-        RealmResults<Song> realmResult = realm.where(Song.class)
+        RealmResults<Song> realmResult = RealmDb.favoriteRealm.where(Song.class)
                 .sort("_id", Sort.DESCENDING)
                 .limit(10)
                 .findAll();
-        return (List<Song>) realm.copyFromRealm(realmResult);
+        return (List<Song>) RealmDb.favoriteRealm.copyFromRealm(realmResult);
     }
 }

@@ -17,9 +17,7 @@ import io.realm.RealmResults;
 public class LiveRealmResults<T extends RealmModel > extends MutableLiveData<List<T>> {
     private final RealmResults<T> results;
 
-    private final Realm realm = Realm.getDefaultInstance();
-
-    private OrderedRealmCollectionChangeListener<RealmResults<T>> listener = (results, changeSet) -> LiveRealmResults.this.setValue((List<T>) realm.copyFromRealm(results));
+    private OrderedRealmCollectionChangeListener<RealmResults<T>> listener = (results, changeSet) -> LiveRealmResults.this.setValue((List<T>) RealmDb.favoriteRealm.copyFromRealm(results));
 
     @MainThread
     public LiveRealmResults(@NonNull RealmResults<T> results) {
@@ -31,7 +29,7 @@ public class LiveRealmResults<T extends RealmModel > extends MutableLiveData<Lis
         }
         this.results = results;
         if (results.isLoaded()) {
-            setValue((List<T>) realm.copyFromRealm(results));
+            setValue((List<T>) RealmDb.favoriteRealm.copyFromRealm(results));
         }
     }
 

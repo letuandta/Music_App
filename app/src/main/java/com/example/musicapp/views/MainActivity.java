@@ -1,5 +1,7 @@
 package com.example.musicapp.views;
 
+import static com.example.musicapp.common.MusicBundleKey.ACTION_MUSIC;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
@@ -14,10 +16,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.example.musicapp.R;
 import com.example.musicapp.adapter.FavoriteSongAdapter;
 import com.example.musicapp.adapter.RecommendSongAdapter;
+import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.common.MusicPlayerActions;
 import com.example.musicapp.databinding.ActivityMainBinding;
 import com.example.musicapp.models.Song;
@@ -27,6 +31,7 @@ import com.example.musicapp.viewmodels.RecommendSongViewModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(binding.getRoot());
         addFragment();
         requestPermissionsForApplication();
+
     }
 
     private void inflateBinding() {
@@ -73,7 +79,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onDestroy();
         Intent intentService = new Intent(MainActivity.this, MusicPlayerService.class);
         Bundle bundle = new Bundle();
-        bundle.putInt("action_music", MusicPlayerActions.ACTION_STOP);
+        bundle.putInt(ACTION_MUSIC, MusicPlayerActions.ACTION_STOP);
         intentService.putExtras(bundle);
         this.startService(intentService);
         Log.e("TAG", "onDestroy: " );
