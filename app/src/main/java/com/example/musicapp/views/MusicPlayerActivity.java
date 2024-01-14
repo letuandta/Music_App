@@ -1,14 +1,22 @@
 package com.example.musicapp.views;
 
 
-import static com.example.musicapp.services.MusicPlayerService.ACTION_CHANGE_LOOPING;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_CHANGE_SHUFFLE;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_NEXT;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_PLAY_OR_PAUSE;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_PREVIOUS;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_SKIP;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_START;
-import static com.example.musicapp.services.MusicPlayerService.ACTION_STOP;
+import static com.example.musicapp.common.MusicBundleKey.ACTION_MUSIC;
+import static com.example.musicapp.common.MusicBundleKey.ACTION_SEND_DATA_TO_ACTIVITY;
+import static com.example.musicapp.common.MusicBundleKey.DURATION;
+import static com.example.musicapp.common.MusicBundleKey.IS_PLAYING;
+import static com.example.musicapp.common.MusicBundleKey.POSITION;
+import static com.example.musicapp.common.MusicBundleKey.SKIP_DURATION;
+import static com.example.musicapp.common.MusicBundleKey.SONG_JSON;
+import static com.example.musicapp.common.MusicBundleKey.TOTAL;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_LOOPING;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_SHUFFLE;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_NEXT;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_PREVIOUS;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_SKIP;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_START;
+import static com.example.musicapp.common.MusicPlayerActions.ACTION_STOP;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,7 +24,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +36,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
+import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.ActivityPlayMusicBinding;
 import com.example.musicapp.models.Song;
 import com.example.musicapp.services.MusicPlayerService;
@@ -46,12 +58,12 @@ public class MusicPlayerActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if(bundle != null) {
-                song = gson.fromJson(bundle.getString("song_json"), Song.class);
-                position = bundle.getInt("position", -1);
-                isPlaying = bundle.getBoolean("is_playing");
-                total = bundle.getInt("total");
-                action = bundle.getInt("action_music");
-                duration = bundle.getInt("duration");
+                song = gson.fromJson(bundle.getString(SONG_JSON), Song.class);
+                position = bundle.getInt(POSITION, -1);
+                isPlaying = bundle.getBoolean(IS_PLAYING);
+                total = bundle.getInt(TOTAL);
+                action = bundle.getInt(ACTION_MUSIC);
+                duration = bundle.getInt(DURATION);
 
                 handleLayoutMusic(action);
             }
@@ -62,62 +74,76 @@ public class MusicPlayerActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        inflateBinding();
+        registerReceiverAction();
+        sendInitDataToService();
+
+        setEventClickNextMusic();
+        setEventClickPreviousMusic();
+        setEventClickPlayOrPauseMusic();
+
+        setEventChangeProgressSeekbar();
+
+    }
+
+    private void inflateBinding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_play_music);
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("action_send_data_to_activity"));
-
-        Intent intent = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-        intent.putExtras(getIntent().getExtras());
-        this.startService(intent);
-
-        binding.iconNext.setOnClickListener(view -> {
-            Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("action_music", ACTION_NEXT);
-            intentService.putExtras(bundle);
-            this.startService(intentService);
-        });
-
-        binding.iconPrevious.setOnClickListener(view -> {
-            Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("action_music", ACTION_PREVIOUS);
-            intentService.putExtras(bundle);
-            this.startService(intentService);
-        });
-
-        binding.iconPlayPause.setOnClickListener(view -> {
-            Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt("action_music", ACTION_PLAY_OR_PAUSE);
-            intentService.putExtras(bundle);
-            this.startService(intentService);
-        });
-
+    }
+    private void setEventChangeProgressSeekbar() {
         binding.seekBarSong.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
 
-                currentDuration = progress;
-                Bundle bundle = new Bundle();
-                bundle.putInt("action_music", ACTION_SKIP);
-                bundle.putInt("skip_duration", progress);
-                intentService.putExtras(bundle);
-                startService(intentService);
+                    currentDuration = progress;
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(ACTION_MUSIC, ACTION_SKIP);
+                    bundle.putInt(SKIP_DURATION, progress);
+                    intentService.putExtras(bundle);
+                    startService(intentService);
+                }
             }
-
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });
 
+    }
+    private void setEventClickNextMusic() {
+        binding.iconNext.setOnClickListener(view -> {
+            handleOnClickIcon(ACTION_NEXT);
+        });
+    }
+    private void setEventClickPreviousMusic() {
+        binding.iconPrevious.setOnClickListener(view -> {
+            handleOnClickIcon(ACTION_PREVIOUS);
+        });
+    }
+    private void setEventClickPlayOrPauseMusic() {
+        binding.iconPlayPause.setOnClickListener(view -> {
+            handleOnClickIcon(ACTION_PLAY_OR_PAUSE);
+        });
+    }
+    private void sendInitDataToService() {
+        Intent intent = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
+        intent.putExtras(getIntent().getExtras());
+        this.startService(intent);
+    }
+    private void registerReceiverAction() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(ACTION_SEND_DATA_TO_ACTIVITY));
+    }
+
+    private void handleOnClickIcon(int action){
+
+        Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt(ACTION_MUSIC, action);
+        intentService.putExtras(bundle);
+        this.startService(intentService);
     }
 
     private void handleLayoutMusic(int action){

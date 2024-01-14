@@ -1,28 +1,28 @@
 package com.example.musicapp.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.musicapp.R;
 import com.example.musicapp.databinding.ItemFavoriteSongBinding;
 import com.example.musicapp.models.Song;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapter.ViewHolder> {
+public class FavoriteSongAdapter extends ListAdapter<Song, FavoriteSongAdapter.ViewHolder> {
 
-    private List<Song> listSong;
-    private FavoritesSongListener listener;
 
-    public FavoriteSongAdapter(List<Song> listSong, FavoritesSongListener listener) {
-        this.listSong = listSong;
+    FavoritesSongListener listener;
+
+    public FavoriteSongAdapter(FavoritesSongListener listener) {
+        super(DIFF_CALLBACK);
         this.listener = listener;
     }
 
@@ -34,8 +34,14 @@ public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapte
     }
 
     @Override
+    public int getItemCount() {
+        if (getCurrentList().size() < 8) return getCurrentList().size();
+        return 7;
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Song song = listSong.get(position);
+        Song song = getItem(position);
 
         if(song != null) {
 
@@ -53,13 +59,6 @@ public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapte
         }
     }
 
-    @Override
-    public int getItemCount() {
-        if (listSong != null && listSong.size() < 8) return listSong.size();
-        if(listSong == null) return 0;
-        return 7;
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder{
         ItemFavoriteSongBinding binding;
 
@@ -68,6 +67,20 @@ public class FavoriteSongAdapter extends RecyclerView.Adapter<FavoriteSongAdapte
             this.binding = binding;
         }
     }
+
+    public static final DiffUtil.ItemCallback<Song> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<Song>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull Song oldItem, @NonNull Song newItem) {
+                    Log.e("TAG", "areItemsTheSame:" + (oldItem.get_id() == newItem.get_id()));
+                    return oldItem.get_id() == newItem.get_id();
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull Song oldItem, @NonNull Song newItem) {
+                    return oldItem.equals(newItem);
+                }
+            };
 
     public interface FavoritesSongListener{
         void onClickItem(int position);

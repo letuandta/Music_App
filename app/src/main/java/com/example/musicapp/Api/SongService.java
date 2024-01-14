@@ -1,9 +1,6 @@
-package com.example.musicapp.repositories;
+package com.example.musicapp.Api;
 
-import com.example.musicapp.Api.ApiClient;
 import com.example.musicapp.models.Data;
-
-import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -11,10 +8,10 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 
-public interface SongRepository {
+public interface SongService {
 
 
-    SongRepository callApi = ApiClient.getClient().create(SongRepository.class);
+    SongService callApi = ApiClient.getClient().create(SongService.class);
 
    @GET("/search")
    @Headers({

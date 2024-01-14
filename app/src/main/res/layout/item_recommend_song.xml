@@ -27,8 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
+                android:textColor="@color/black"
                 android:text="Title song"
-                android:textColor="@color/white"
                 android:textStyle="bold"/>
 
             <TextView
@@ -37,7 +37,6 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:text="artist song"
-                android:textColor="@color/white"
                 android:textStyle="normal"/>
 
         </LinearLayout>
@@ -49,7 +48,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:contentDescription="add into favorite list"
-            app:tint="@color/white"/>
+            app:tint="@color/black"/>
 
     </RelativeLayout>
 </layout>

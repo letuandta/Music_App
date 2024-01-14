@@ -27,10 +27,4 @@ public class ApiClient {
         return retrofit;
     }
 
-//    @GET("/search")
-//    @Headers({
-//            "X-RapidAPI-Key: 0ae3b525fcmshd91376150aa78f2p15c64fjsnb190213784b2",
-//            "X-RapidAPI-Host: deezerdevs-deezer.p.rapidapi.com"
-//    })
-//    Call<Data> getSong(@Query("q") String queryKey);
 }

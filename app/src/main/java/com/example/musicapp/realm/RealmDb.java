@@ -7,17 +7,27 @@ import io.realm.RealmConfiguration;
 
 public class RealmDb extends Application {
 
+    public static Realm favoriteRealm;
+    public static Realm recommendRealm;
     @Override
     public void onCreate() {
         super.onCreate();
 
         Realm.init(this);
 
-        RealmConfiguration configuration = new RealmConfiguration.Builder()
+        RealmConfiguration favoriteConfig = new RealmConfiguration.Builder()
+                .name("favorites.realm")
                 .allowQueriesOnUiThread(true)
                 .allowWritesOnUiThread(true)
                 .deleteRealmIfMigrationNeeded().build();
 
-        Realm.setDefaultConfiguration(configuration);
+        RealmConfiguration recommendConfig = new RealmConfiguration.Builder()
+                .name("recommend.realm")
+                .allowQueriesOnUiThread(true)
+                .allowWritesOnUiThread(true)
+                .deleteRealmIfMigrationNeeded().build();
+
+        favoriteRealm = Realm.getInstance(favoriteConfig);
+        recommendRealm = Realm.getInstance(recommendConfig);
     }
 }
