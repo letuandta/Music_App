@@ -35,7 +35,7 @@ public class Song extends RealmObject implements Serializable {
 
     public long get_id() {
         return _id;
-    }
+    } // Should use carmel case
 
     public void set_id(long _id) {
         this._id = _id;

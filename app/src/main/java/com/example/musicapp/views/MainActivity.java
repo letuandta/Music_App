@@ -39,7 +39,6 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity  {
-
     //<!-- region declare -->
     ActivityMainBinding binding;
     private FragmentManager fragmentManager;
@@ -77,11 +76,12 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // If service is not running, no need to call this
         Intent intentService = new Intent(MainActivity.this, MusicPlayerService.class);
         Bundle bundle = new Bundle();
         bundle.putInt(ACTION_MUSIC, MusicPlayerActions.ACTION_STOP);
         intentService.putExtras(bundle);
-        this.startService(intentService);
+        this.startService(intentService); // Stop service instead
         Log.e("TAG", "onDestroy: " );
     }
 }

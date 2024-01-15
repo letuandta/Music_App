@@ -12,8 +12,7 @@ import io.realm.Sort;
 
 public class FavoritesRepository {
 
-
-    public static void addSong(Song song){
+    public static void addSong(Song song) {
 
         Number songId = RealmDb.favoriteRealm.where(Song.class).max("_id");
         Number artistId = RealmDb.favoriteRealm.where(Artist.class).max("_id");

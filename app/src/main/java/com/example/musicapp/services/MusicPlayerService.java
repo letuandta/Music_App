@@ -62,18 +62,18 @@ public class MusicPlayerService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) { // Should combine 1, 2, 3, 4 in one method
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            getTypeFromBundle(bundle);
+            getTypeFromBundle(bundle); // 1
             if(isTypeExist()) {
-                getPositionFromBundle(bundle);
+                getPositionFromBundle(bundle); // 2
                 if(isValidPosition())
                     handleTypeData(type);
             }
 
-            getActionFromBundle(bundle);
-            getSkipDuration(bundle);
+            getActionFromBundle(bundle); // 3
+            getSkipDuration(bundle); // 4
             if (isValidAction()) {
                 handleActionMusic(actionMusic, skipDuration);
             }
@@ -83,16 +83,16 @@ public class MusicPlayerService extends Service {
     }
 
     private void handleTypeData(String type){
-        switch (type){
+        switch (type){ // Should use if else instead
             case RECOMMEND_SONG:
                 Log.e("TAG", "onStartCommand: recommend_song");
                 songs = RecommendsRepository.readData();
-                startMusic();
+                startMusic(); // Duplicate code
                 break;
             case FAVORITES_SONG:
                 Log.e("TAG", "onStartCommand: favorites_song");
                 songs = FavoritesRepository.readData();
-                startMusic();
+                startMusic(); // Duplicate code
                 break;
         }
     }
@@ -102,7 +102,7 @@ public class MusicPlayerService extends Service {
         startForeground(MusicNotification.NOTIFICATION_ID, musicNotification);
     }
 
-    private void sendIntentToActivity(int action){
+    private void sendIntentToActivity(int action){ // Recommend to use EventBus library
         Intent intent = new Intent(ACTION_SEND_DATA_TO_ACTIVITY);
         Bundle bundle = new Bundle();
         bundle.putInt(ACTION_MUSIC, action);
@@ -117,7 +117,7 @@ public class MusicPlayerService extends Service {
         LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcastSync(intent);
     }
 
-    private void handleActionMusic(int actionMusic, int skipDuration) {
+    private void handleActionMusic(int actionMusic, int skipDuration) { // Can be optimized to reduce duplicated code
         switch (actionMusic){
             case ACTION_PLAY_OR_PAUSE:
                 playOrPauseMusic();
@@ -222,7 +222,7 @@ public class MusicPlayerService extends Service {
             isPlaying = false;
         }
         else {
-            assert mediaPlayer != null;
+            assert mediaPlayer != null; // Should not use assert in code, will lead to crash
             mediaPlayer.start();
             isPlaying = true;
         }

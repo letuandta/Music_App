@@ -33,7 +33,7 @@ public class RecommendSongViewModel extends ViewModel {
 
     public void initData() {
         assert context != null;
-                SongService.callApi.getSong("you")
+                SongService.callApi.getSong("you") // Must be handled by repository
                         .enqueue(new Callback<Data>() {
                             @Override
                             public void onResponse(Call<Data> call, Response<Data> response) {

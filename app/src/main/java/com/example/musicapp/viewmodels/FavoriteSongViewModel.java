@@ -13,7 +13,7 @@ public class FavoriteSongViewModel extends ViewModel {
     private final LiveRealmResults<Song> liveRealmResults;
 
     public FavoriteSongViewModel() {
-        liveRealmResults = new LiveRealmResults<>(RealmDb.favoriteRealm.where(Song.class)
+        liveRealmResults = new LiveRealmResults<>(RealmDb.favoriteRealm.where(Song.class) // Should use repository to call query
                 .sort("_id", Sort.DESCENDING)
                 .limit(7)
                 .findAll());

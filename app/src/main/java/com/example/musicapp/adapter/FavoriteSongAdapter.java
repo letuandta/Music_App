@@ -29,7 +29,7 @@ public class FavoriteSongAdapter extends ListAdapter<Song, FavoriteSongAdapter.V
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemFavoriteSongBinding binding = ItemFavoriteSongBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        ItemFavoriteSongBinding binding = ItemFavoriteSongBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false); // Should be in ViewModel class
         return new ViewHolder(binding);
     }
 
@@ -40,7 +40,7 @@ public class FavoriteSongAdapter extends ListAdapter<Song, FavoriteSongAdapter.V
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) { // Should use method of ViewHolder instead
         Song song = getItem(position);
 
         if(song != null) {

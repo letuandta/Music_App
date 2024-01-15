@@ -61,7 +61,7 @@ public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.F
         initViewModel();
         initAdapter();
         observerDataInViewModel();
-        setAdapterForRecycleView();
+        setAdapterForRecycleView(); // Should be inside initAdapter
 
         return binding.getRoot();
     }
