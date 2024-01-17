@@ -1,6 +1,6 @@
 package com.example.musicapp.Api;
 
-import com.example.musicapp.models.Data;
+import com.example.musicapp.models.recommend.Data;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

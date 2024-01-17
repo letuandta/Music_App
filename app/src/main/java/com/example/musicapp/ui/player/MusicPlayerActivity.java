@@ -1,22 +1,22 @@
-package com.example.musicapp.views;
+package com.example.musicapp.ui.player;
 
 
-import static com.example.musicapp.common.MusicBundleKey.ACTION_MUSIC;
-import static com.example.musicapp.common.MusicBundleKey.ACTION_SEND_DATA_TO_ACTIVITY;
-import static com.example.musicapp.common.MusicBundleKey.DURATION;
-import static com.example.musicapp.common.MusicBundleKey.IS_PLAYING;
-import static com.example.musicapp.common.MusicBundleKey.POSITION;
-import static com.example.musicapp.common.MusicBundleKey.SKIP_DURATION;
-import static com.example.musicapp.common.MusicBundleKey.SONG_JSON;
-import static com.example.musicapp.common.MusicBundleKey.TOTAL;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_LOOPING;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_SHUFFLE;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_NEXT;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_PREVIOUS;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_SKIP;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_START;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_STOP;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.ACTION_MUSIC;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.ACTION_SEND_DATA_TO_ACTIVITY;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.DURATION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.IS_PLAYING;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.SKIP_DURATION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.SONG_JSON;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.TOTAL;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_CHANGE_LOOPING;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_CHANGE_SHUFFLE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_NEXT;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PREVIOUS;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_SKIP;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_START;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_STOP;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,10 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +33,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
-import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.ActivityPlayMusicBinding;
 import com.example.musicapp.models.Song;
 import com.example.musicapp.services.MusicPlayerService;

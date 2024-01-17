@@ -1,8 +1,8 @@
-package com.example.musicapp.views;
+package com.example.musicapp.ui.recommend;
 
-import static com.example.musicapp.common.MusicBundleKey.POSITION;
-import static com.example.musicapp.common.MusicBundleKey.TYPE;
-import static com.example.musicapp.common.MusicPlayerType.RECOMMEND_SONG;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.TYPE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.RECOMMEND_SONG;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,40 +10,26 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.musicapp.R;
-import com.example.musicapp.adapter.RecommendSongAdapter;
 import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.FragmentRecommendsBinding;
-import com.example.musicapp.models.Song;
-import com.example.musicapp.viewmodels.RecommendSongViewModel;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.musicapp.ui.player.MusicPlayerActivity;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
 
 
 public class RecommendsFragment extends Fragment implements
         RecommendSongAdapter.RecommendsSongListener{
 
-    RecyclerView rcvRecommendSong;
-
     private RecommendSongAdapter recommendSongAdapter;
     private RecommendSongViewModel recommendSongViewModel;
 
     FragmentRecommendsBinding binding;
-
-    Gson gson = new Gson();
-
 
     public static RecommendsFragment newInstance() {
         return new RecommendsFragment();
@@ -64,7 +50,6 @@ public class RecommendsFragment extends Fragment implements
         initViewModel();
         initAdapter();
         observerDataInViewModel();
-        setAdapterForRecycleView();
 
         return binding.getRoot();
     }
@@ -75,18 +60,20 @@ public class RecommendsFragment extends Fragment implements
     private void initViewModel() {
         recommendSongViewModel = new ViewModelProvider(this).get(RecommendSongViewModel.class);
         recommendSongViewModel.setContext(getContext());
-        recommendSongViewModel.initData();
+        try {
+            recommendSongViewModel.initData();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
     private void initAdapter() {
         recommendSongAdapter = new RecommendSongAdapter(this);
+        binding.rcvRecommendSong.setAdapter(recommendSongAdapter);
     }
     private void observerDataInViewModel() {
         recommendSongViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> {
             recommendSongAdapter.submitList(songs);
         });
-    }
-    private void setAdapterForRecycleView() {
-        binding.rcvRecommendSong.setAdapter(recommendSongAdapter);
     }
 
     @Override

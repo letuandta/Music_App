@@ -1,9 +1,9 @@
 package com.example.musicapp.notification;
 
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_NEXT;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_PREVIOUS;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_STOP;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_NEXT;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PREVIOUS;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_STOP;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

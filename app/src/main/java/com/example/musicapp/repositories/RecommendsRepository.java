@@ -1,59 +1,36 @@
 package com.example.musicapp.repositories;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import androidx.lifecycle.MutableLiveData;
 
+import com.example.musicapp.Api.SongService;
 import com.example.musicapp.models.Artist;
 import com.example.musicapp.models.Song;
-import com.example.musicapp.realm.RealmDb;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.musicapp.models.recommend.Data;
+import com.example.musicapp.MyApplication;
+import com.example.musicapp.models.recommend.RecommendSong;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RecommendsRepository {
-//    public static final String RECOMMEND_SONG = "recommends_song";
-//
-//    public static void setRecommendsSongToSharePreferences(Context context, List<Song> list){
-//
-//        Gson gson = new Gson();
-//        SharedPreferences sharedPreferences = context.getSharedPreferences(RECOMMEND_SONG, Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        Type listSong = new TypeToken<List<Song>>() {}.getType();
-//        String songJson = gson.toJson(list, listSong);
-//
-//        editor.putString(RECOMMEND_SONG, songJson);
-//        editor.commit();
-//    }
 
-//    public static List<Song> getRecommendsSongFromSharePreferences(Context context){
-//        List<Song> list = new ArrayList<>();
-//        Gson gson = new Gson();
-//        SharedPreferences sharedPreferences = context.getSharedPreferences(RECOMMEND_SONG, Context.MODE_PRIVATE);
-//
-//        String songJson = sharedPreferences.getString(RECOMMEND_SONG, null);
-//        if(songJson != null) {
-//            Type listSong = new TypeToken<List<Song>>() {
-//            }.getType();
-//            list = gson.fromJson(songJson, listSong);
-//        }
-//
-//        return list;
-//    }
-
-    public static void addListSong(List<Song> songs){
-        songs.forEach(RecommendsRepository::addSong);
+    public void addListSong(List<Song> songs){
+        MyApplication.musicAppRealm.executeTransaction(realm -> realm.delete(RecommendSong.class));
+        songs.forEach(song -> {
+            addSong(parseToRecommendSong(song));
+        });
     }
 
-    public static void addSong(Song song){
+    public void addSong(RecommendSong song){
 
-        Number songId = RealmDb.recommendRealm.where(Song.class).max("_id");
-        Number artistId = RealmDb.recommendRealm.where(Artist.class).max("_id");
+        Number songId = MyApplication.musicAppRealm.where(RecommendSong.class).max("_id");
+        Number artistId = MyApplication.musicAppRealm.where(Artist.class).max("_id");
         long nextSongId;
         long nextArtistId;
 
@@ -69,16 +46,56 @@ public class RecommendsRepository {
             nextArtistId = artistId.intValue() + 1;
         }
 
-        song.set_id(nextSongId);
-        song.getArtist().set_id(nextArtistId);
+        song.setId(nextSongId);
+        song.getArtist().setId(nextArtistId);
 
-        RealmDb.recommendRealm.executeTransaction(r -> {
-            RealmDb.recommendRealm.insert(song);
+        MyApplication.musicAppRealm.executeTransaction(r -> {
+            MyApplication.musicAppRealm.insert(song);
         });
     }
 
-    public static List<Song> readData() {
-        RealmResults<Song> realmResult = RealmDb.recommendRealm.where(Song.class).findAll();
-        return (List<Song>) RealmDb.recommendRealm.copyFromRealm(realmResult);
+    public List<Song> readDataFromLocal() {
+        RealmResults<RecommendSong> realmResult = MyApplication.musicAppRealm.where(RecommendSong.class).findAll();
+        List<RecommendSong> recommendSongs = (List<RecommendSong>) MyApplication.musicAppRealm.copyFromRealm(realmResult);
+        return parseToListSong(recommendSongs);
+    }
+
+    public List<Song> parseToListSong(List<RecommendSong> recommendSongList) {
+        List<Song> songs = new ArrayList<>();
+        recommendSongList.forEach(recommendSong -> {
+            Song song = new Song(recommendSong.getTitle(), recommendSong.getDuration()
+                    , recommendSong.getPreview(), recommendSong.getArtist());
+            song.setId(recommendSong.getId());
+            songs.add(song);
+        });
+
+        return songs;
+    }
+
+    public RecommendSong parseToRecommendSong(Song song) {
+        RecommendSong recommendSong = new RecommendSong(song.getTitle(), song.getDuration()
+                , song.getPreview(), song.getArtist());
+        song.setId(song.getId());
+
+        return recommendSong;
+    }
+
+    public void loadDataFromApi(MutableLiveData<List<Song>> liveData){
+        SongService.callApi.getSong("you")
+                .enqueue(new Callback<Data>() {
+                    @Override
+                    public void onResponse(Call<Data> call, Response<Data> response) {
+                        Data data = response.body();
+                        assert data != null;
+                        List<Song> songs = data.getData();
+                        addListSong(songs);
+                        liveData.setValue(songs);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Data> call, Throwable t) {
+
+                    }
+                });
     }
 }

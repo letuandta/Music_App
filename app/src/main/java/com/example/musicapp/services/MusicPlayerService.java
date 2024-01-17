@@ -1,24 +1,26 @@
 package com.example.musicapp.services;
 
-import static com.example.musicapp.common.MusicBundleKey.ACTION_MUSIC;
-import static com.example.musicapp.common.MusicBundleKey.ACTION_SEND_DATA_TO_ACTIVITY;
-import static com.example.musicapp.common.MusicBundleKey.DURATION;
-import static com.example.musicapp.common.MusicBundleKey.IS_PLAYING;
-import static com.example.musicapp.common.MusicBundleKey.POSITION;
-import static com.example.musicapp.common.MusicBundleKey.SKIP_DURATION;
-import static com.example.musicapp.common.MusicBundleKey.SONG_JSON;
-import static com.example.musicapp.common.MusicBundleKey.TOTAL;
-import static com.example.musicapp.common.MusicBundleKey.TYPE;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_LOOPING;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_CHANGE_SHUFFLE;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_NEXT;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_PREVIOUS;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_SKIP;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_START;
-import static com.example.musicapp.common.MusicPlayerActions.ACTION_STOP;
-import static com.example.musicapp.common.MusicPlayerType.FAVORITES_SONG;
-import static com.example.musicapp.common.MusicPlayerType.RECOMMEND_SONG;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.ACTION_MUSIC;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.ACTION_SEND_DATA_TO_ACTIVITY;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.DURATION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.IS_PLAYING;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.KEY_SEARCH;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.SKIP_DURATION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.SONG_JSON;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.TOTAL;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.TYPE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_CHANGE_LOOPING;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_CHANGE_SHUFFLE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_NEXT;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PREVIOUS;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_SKIP;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_START;
+import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_STOP;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.FAVORITES_SONG;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.RECOMMEND_SONG;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.SEARCH_SONG;
 
 import android.app.Notification;
 import android.app.Service;
@@ -29,27 +31,30 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.musicapp.MyApplication;
 import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.models.Song;
+import com.example.musicapp.models.recommend.RecommendSong;
 import com.example.musicapp.notification.MusicNotification;
-import com.example.musicapp.repositories.FavoritesRepository;
-import com.example.musicapp.repositories.RecommendsRepository;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
 
 public class MusicPlayerService extends Service {
+
+    public static boolean isServiceRunning = false;
     Gson gson = new Gson();
-    List<Song> songs;
+    List<? extends Song> songs;
+    List<RecommendSong> recommendSongs;
     int position = 0;
-    boolean isPlaying, isLooping, isShuffle;
-    String type;
+    boolean isPlaying;
+    String type, keySearch;
     int actionMusic, skipDuration;
     MediaPlayer mediaPlayer;
 
@@ -62,39 +67,36 @@ public class MusicPlayerService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) { // Should combine 1, 2, 3, 4 in one method
+    public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            getTypeFromBundle(bundle); // 1
+            getDataFromBundle(bundle);
             if(isTypeExist()) {
-                getPositionFromBundle(bundle); // 2
                 if(isValidPosition())
                     handleTypeData(type);
             }
 
-            getActionFromBundle(bundle); // 3
-            getSkipDuration(bundle); // 4
             if (isValidAction()) {
                 handleActionMusic(actionMusic, skipDuration);
             }
         }
 
+        MusicPlayerService.isServiceRunning = true;
         return START_NOT_STICKY;
     }
 
     private void handleTypeData(String type){
-        switch (type){ // Should use if else instead
+        switch (type){
             case RECOMMEND_SONG:
-                Log.e("TAG", "onStartCommand: recommend_song");
-                songs = RecommendsRepository.readData();
-                startMusic(); // Duplicate code
+                songs = MyApplication.mRecommendsRepository.readDataFromLocal();
                 break;
             case FAVORITES_SONG:
-                Log.e("TAG", "onStartCommand: favorites_song");
-                songs = FavoritesRepository.readData();
-                startMusic(); // Duplicate code
+                songs = MyApplication.mFavoritesRepository.readData();
                 break;
+            case SEARCH_SONG:
+                songs = MyApplication.mSearchRepository.getListFromKey(keySearch);
         }
+        startMusic();
     }
 
     private void sendNotification(Context context, Song song, boolean isPlaying){
@@ -121,21 +123,15 @@ public class MusicPlayerService extends Service {
         switch (actionMusic){
             case ACTION_PLAY_OR_PAUSE:
                 playOrPauseMusic();
-                sendNotification(getApplicationContext(), songs.get(position), isPlaying);
-                sendIntentToActivity(ACTION_PLAY_OR_PAUSE);
                 break;
             case ACTION_START:
                 sendIntentToActivity(ACTION_START);
                 break;
             case ACTION_NEXT:
                 nextMusic();
-                sendNotification(getApplicationContext(), songs.get(position), isPlaying);
-                sendIntentToActivity(ACTION_NEXT);
                 break;
             case ACTION_PREVIOUS:
                 prevMusic();
-                sendNotification(getApplicationContext(), songs.get(position), isPlaying);
-                sendIntentToActivity(ACTION_PREVIOUS);
                 break;
             case ACTION_STOP:
                 sendIntentToActivity(ACTION_STOP);
@@ -143,9 +139,7 @@ public class MusicPlayerService extends Service {
                 stopSelf();
                 break;
             case ACTION_CHANGE_SHUFFLE:
-                break;
             case ACTION_CHANGE_LOOPING:
-                break;
             case ACTION_SKIP:
                 skipMusic(skipDuration);
                 break;
@@ -154,20 +148,17 @@ public class MusicPlayerService extends Service {
     private boolean isValidAction() {
         return actionMusic > 0;
     }
-    private void getSkipDuration(Bundle bundle) {
-        skipDuration = bundle.getInt(SKIP_DURATION, -1);
-    }
-    private void getActionFromBundle(Bundle bundle) {
-        actionMusic = bundle.getInt(ACTION_MUSIC, -1);
-    }
-    private void getTypeFromBundle(Bundle bundle){
+    private void getDataFromBundle(@NonNull Bundle bundle){
         type = bundle.getString(TYPE, "");
+        actionMusic = bundle.getInt(ACTION_MUSIC, -1);
+        skipDuration = bundle.getInt(SKIP_DURATION, -1);
+        if(isTypeExist()) {
+            position = bundle.getInt(POSITION, -1);
+            keySearch = bundle.getString(KEY_SEARCH, "");
+        }
     }
     private boolean isTypeExist(){
         return !type.equals("");
-    }
-    private void getPositionFromBundle(Bundle bundle){
-        position = bundle.getInt(POSITION, -1);
     }
     private boolean isValidPosition(){
         return position >= 0;
@@ -221,11 +212,12 @@ public class MusicPlayerService extends Service {
             mediaPlayer.pause();
             isPlaying = false;
         }
-        else {
-            assert mediaPlayer != null; // Should not use assert in code, will lead to crash
+        else if(mediaPlayer != null){
             mediaPlayer.start();
             isPlaying = true;
         }
+        sendNotification(getApplicationContext(), songs.get(position), isPlaying);
+        sendIntentToActivity(ACTION_PLAY_OR_PAUSE);
     }
 
     void nextMusic(){
@@ -236,6 +228,8 @@ public class MusicPlayerService extends Service {
             position = 0;
             playMusic();
         }
+        sendNotification(getApplicationContext(), songs.get(position), isPlaying);
+        sendIntentToActivity(ACTION_NEXT);
     }
 
     void prevMusic(){
@@ -246,6 +240,8 @@ public class MusicPlayerService extends Service {
             position = songs.size() - 1;
             playMusic();
         }
+        sendNotification(getApplicationContext(), songs.get(position), isPlaying);
+        sendIntentToActivity(ACTION_PREVIOUS);
     }
 
     @Override
@@ -254,5 +250,6 @@ public class MusicPlayerService extends Service {
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
+        MusicPlayerService.isServiceRunning = false;
     }
 }

@@ -1,22 +1,20 @@
-package com.example.musicapp.viewmodels;
+package com.example.musicapp.ui.favorite;
 
 import androidx.lifecycle.ViewModel;
 
 import com.example.musicapp.models.Song;
 import com.example.musicapp.realm.LiveRealmResults;
-import com.example.musicapp.realm.RealmDb;
+import com.example.musicapp.MyApplication;
 
-import io.realm.Realm;
 import io.realm.Sort;
 
 public class FavoriteSongViewModel extends ViewModel {
     private final LiveRealmResults<Song> liveRealmResults;
 
     public FavoriteSongViewModel() {
-        liveRealmResults = new LiveRealmResults<>(RealmDb.favoriteRealm.where(Song.class) // Should use repository to call query
-                .sort("_id", Sort.DESCENDING)
-                .limit(7)
-                .findAll());
+        liveRealmResults = new LiveRealmResults<>(
+                MyApplication.mFavoritesRepository.readSongRealmResult()
+        );
     }
 
     public LiveRealmResults<Song> getLiveRealmResults() {

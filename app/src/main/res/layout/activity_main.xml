@@ -9,7 +9,7 @@
             android:background="@color/background"
             android:orientation="vertical"
             android:padding="10dp"
-            tools:context=".views.MainActivity">
+            tools:context=".ui.main.MainActivity">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="vertical"
@@ -30,10 +30,11 @@
                         app:tint="@color/black"/>
 
                     <EditText
+                        android:id="@+id/edt_search"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/search_icon"
-                        android:focusable="false"
+                        android:inputType="text"
                         android:hint="search song" />
                 </RelativeLayout>
 

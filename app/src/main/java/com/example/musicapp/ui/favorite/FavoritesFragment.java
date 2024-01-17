@@ -1,19 +1,16 @@
-package com.example.musicapp.views;
+package com.example.musicapp.ui.favorite;
 
-import static com.example.musicapp.common.MusicBundleKey.POSITION;
-import static com.example.musicapp.common.MusicBundleKey.TYPE;
-import static com.example.musicapp.common.MusicPlayerType.FAVORITES_SONG;
-import static com.example.musicapp.common.MusicPlayerType.RECOMMEND_SONG;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.common.AppConstants.MusicBundleKey.TYPE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.FAVORITES_SONG;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,21 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.musicapp.R;
-import com.example.musicapp.adapter.FavoriteSongAdapter;
 import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.FragmentFavoritesBinding;
-import com.example.musicapp.models.Song;
-import com.example.musicapp.viewmodels.FavoriteSongViewModel;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.musicapp.ui.player.MusicPlayerActivity;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.FavoritesSongListener{
 
@@ -43,8 +30,6 @@ public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.F
     private FavoriteSongAdapter favoriteSongAdapter;
     private FavoriteSongViewModel favoriteSongViewModel;
 
-    Gson gson = new Gson();
-    Realm realm = Realm.getDefaultInstance();
     public static FavoritesFragment newInstance() {
         return new FavoritesFragment();
     }
@@ -61,7 +46,6 @@ public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.F
         initViewModel();
         initAdapter();
         observerDataInViewModel();
-        setAdapterForRecycleView(); // Should be inside initAdapter
 
         return binding.getRoot();
     }
@@ -74,6 +58,7 @@ public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.F
     }
     private void initAdapter(){
         favoriteSongAdapter = new FavoriteSongAdapter(this);
+        binding.rcvFavoriteSong.setAdapter(favoriteSongAdapter);
     };
     private void observerDataInViewModel(){
         favoriteSongViewModel.getLiveRealmResults().observe(getViewLifecycleOwner(), songs -> {
@@ -81,9 +66,7 @@ public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.F
             favoriteSongAdapter.submitList(songs);
         });
     }
-    private void setAdapterForRecycleView(){
-        binding.rcvFavoriteSong.setAdapter(favoriteSongAdapter);
-    }
+
     @Override
     public void onClickItem(int position) {
         try {

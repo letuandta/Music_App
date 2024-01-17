@@ -1,5 +1,7 @@
-package com.example.musicapp.models;
+package com.example.musicapp.models.recommend;
 
+import com.example.musicapp.models.Song;
+import com.example.musicapp.models.recommend.RecommendSong;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

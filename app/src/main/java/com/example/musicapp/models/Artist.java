@@ -4,10 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
-public class Artist extends RealmObject implements Serializable {
+@RealmClass
+public class Artist implements Serializable, RealmModel {
 
     @PrimaryKey
     private long _id;
@@ -24,11 +27,11 @@ public class Artist extends RealmObject implements Serializable {
         this.name = name;
     }
 
-    public long get_id() {
+    public long getId() {
         return _id;
     }
 
-    public void set_id(long _id) {
+    public void setId(long _id) {
         this._id = _id;
     }
 
