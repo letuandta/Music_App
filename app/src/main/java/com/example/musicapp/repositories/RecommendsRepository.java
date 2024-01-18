@@ -28,29 +28,8 @@ public class RecommendsRepository {
     }
 
     public void addSong(RecommendSong song){
-
-        Number songId = MyApplication.musicAppRealm.where(RecommendSong.class).max("_id");
-        Number artistId = MyApplication.musicAppRealm.where(Artist.class).max("_id");
-        long nextSongId;
-        long nextArtistId;
-
-        if(songId == null){
-            nextSongId = 1;
-        } else {
-            nextSongId = songId.intValue() + 1;
-        }
-
-        if(artistId == null){
-            nextArtistId = 1;
-        } else {
-            nextArtistId = artistId.intValue() + 1;
-        }
-
-        song.setId(nextSongId);
-        song.getArtist().setId(nextArtistId);
-
         MyApplication.musicAppRealm.executeTransaction(r -> {
-            MyApplication.musicAppRealm.insert(song);
+            MyApplication.musicAppRealm.copyToRealmOrUpdate(song);
         });
     }
 
@@ -75,7 +54,7 @@ public class RecommendsRepository {
     public RecommendSong parseToRecommendSong(Song song) {
         RecommendSong recommendSong = new RecommendSong(song.getTitle(), song.getDuration()
                 , song.getPreview(), song.getArtist());
-        song.setId(song.getId());
+        recommendSong.setId(song.getId());
 
         return recommendSong;
     }

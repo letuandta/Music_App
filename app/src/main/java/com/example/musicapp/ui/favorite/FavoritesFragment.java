@@ -69,21 +69,13 @@ public class FavoritesFragment extends Fragment implements FavoriteSongAdapter.F
 
     @Override
     public void onClickItem(int position) {
-        try {
-            if(InternetConnection.isConnected()){
-                Bundle bundle = new Bundle();
+        Bundle bundle = new Bundle();
 
-                bundle.putString(TYPE, FAVORITES_SONG);
-                bundle.putInt(POSITION, position);
+        bundle.putString(TYPE, FAVORITES_SONG);
+        bundle.putInt(POSITION, position);
 
-                Intent intent = new Intent(getContext(), MusicPlayerActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }else {
-                Toast.makeText(getContext(), "No Internet", Toast.LENGTH_SHORT).show();
-            }
-        } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        Intent intent = new Intent(getContext(), MusicPlayerActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }

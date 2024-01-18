@@ -21,6 +21,7 @@ import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION
 import static com.example.musicapp.common.AppConstants.MusicPlayerType.FAVORITES_SONG;
 import static com.example.musicapp.common.AppConstants.MusicPlayerType.RECOMMEND_SONG;
 import static com.example.musicapp.common.AppConstants.MusicPlayerType.SEARCH_SONG;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
 
 import android.app.Notification;
 import android.app.Service;
@@ -31,6 +32,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,10 +41,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.musicapp.MyApplication;
 import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.models.Song;
-import com.example.musicapp.models.recommend.RecommendSong;
 import com.example.musicapp.notification.MusicNotification;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -51,7 +53,6 @@ public class MusicPlayerService extends Service {
     public static boolean isServiceRunning = false;
     Gson gson = new Gson();
     List<? extends Song> songs;
-    List<RecommendSong> recommendSongs;
     int position = 0;
     boolean isPlaying;
     String type, keySearch;
@@ -94,7 +95,10 @@ public class MusicPlayerService extends Service {
                 songs = MyApplication.mFavoritesRepository.readData();
                 break;
             case SEARCH_SONG:
+            case SEARCH_SONG_OFFLINE:
                 songs = MyApplication.mSearchRepository.getListFromKey(keySearch);
+                break;
+
         }
         startMusic();
     }
@@ -114,6 +118,7 @@ public class MusicPlayerService extends Service {
         bundle.putInt(TOTAL, songs.size());
         bundle.putBoolean(IS_PLAYING, isPlaying);
         bundle.putInt(DURATION, mediaPlayer.getDuration() / 1000);
+        Log.e("DUARATION", String.valueOf(mediaPlayer.getDuration() / 1000));
         intent.putExtras(bundle);
 
         LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcastSync(intent);
@@ -179,8 +184,6 @@ public class MusicPlayerService extends Service {
         playMusic();
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
             nextMusic();
-            sendNotification(getApplicationContext(),songs.get(position), isPlaying);
-            sendIntentToActivity(ACTION_START);
         });
         sendNotification(getApplicationContext(), songs.get(position), isPlaying);
         sendIntentToActivity(ACTION_START);
@@ -188,19 +191,20 @@ public class MusicPlayerService extends Service {
 
     void playMusic(){
         try {
-            if(InternetConnection.isConnected()) {
-                if (mediaPlayer != null) {
-                    try {
-                        Uri uri = Uri.parse(songs.get(position).getPreview());
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(this, uri);
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
-                        isPlaying = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            if(mediaPlayer != null) {
+                mediaPlayer.reset();
+                if (InternetConnection.isConnected()) {
+                    mediaPlayer.setDataSource(this, Uri.parse(songs.get(position).getPreview()));
+                }else {
+                    Song song = songs.get(position);
+                    String fileName = song.getId() + ".mp3";
+                    File file = MyApplication.mOfflineRepository.getSong(getApplicationContext(),fileName);
+                    if(file.exists())
+                        mediaPlayer.setDataSource(Uri.fromFile(file).getPath());
                 }
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+                isPlaying = true;
             }
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);

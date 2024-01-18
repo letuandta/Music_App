@@ -1,6 +1,9 @@
 package com.example.musicapp.ui.recommend;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -9,15 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.MyApplication;
+import com.example.musicapp.R;
+import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.ItemSongBinding;
 import com.example.musicapp.models.Song;
+
+import java.io.File;
+import java.io.IOException;
 
 public class RecommendViewHolder extends RecyclerView.ViewHolder {
 
     ItemSongBinding binding;
-    public RecommendViewHolder(@NonNull View itemView) {
+    Context context;
+    public RecommendViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
         binding = ItemSongBinding.bind(itemView);
+        this.context = context;
     }
 
     public void onBind(Song song, int position, RecommendSongAdapter.RecommendsSongListener listener){
@@ -28,16 +38,31 @@ public class RecommendViewHolder extends RecyclerView.ViewHolder {
 
         binding.titleSongRecommend.setText(String.valueOf(song.getTitle()));
         binding.artistSongRecommend.setText(String.valueOf(song.getArtist().getName()));
-
-        binding.btnAddIntoFavorite.setOnClickListener(view -> {
-            try {
-                MyApplication.mFavoritesRepository.addSong(song);
-                Toast.makeText(view.getContext(), "Add song into favorites list success", Toast.LENGTH_LONG).show();
-            }catch (Exception e){
-                Log.e("FAVORITES LIST", "can't add song into favorites list");
+        try {
+            if (!InternetConnection.isConnected()){
+                binding.btnAddIntoFavorite.setVisibility(View.INVISIBLE);
             }
-        });
-
+            else {
+                binding.btnAddIntoFavorite.setOnClickListener(view -> {
+                    try {
+                        if(!MyApplication.mFavoritesRepository.exists(song.getId()) && InternetConnection.isConnected()) {
+                            MyApplication.mFavoritesRepository.addSong(song);
+                            String fileName = song.getId() + ".mp3";
+                            File file = MyApplication.mOfflineRepository.getSong(context, fileName);
+                            if (!file.exists())
+                                MyApplication.mOfflineRepository.downloadSong(context, song);
+                            Toast.makeText(view.getContext(), "Add song into favorites list success", Toast.LENGTH_LONG).show();
+                            binding.btnAddIntoFavorite.setVisibility(View.INVISIBLE);
+                        }
+                        else Toast.makeText(view.getContext(), "This song already exists OR no internet", Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                            Log.e("FAVORITES LIST", "can't add song into favorites list");
+                    }
+                });
+            }
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        }
         binding.layoutRecommendsSong.setOnClickListener(view -> {
             listener.onClickRecommendItem(position);
         });

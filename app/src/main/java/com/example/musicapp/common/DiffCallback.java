@@ -13,8 +13,7 @@ public class DiffCallback {
             new DiffUtil.ItemCallback<Song>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull Song oldItem, @NonNull Song newItem) {
-                    Log.e("TAG", "areItemsTheSame:" + (oldItem.getId() == newItem.getId()));
-                    return oldItem.getId() == newItem.getId();
+                    return oldItem.getId().equals(newItem.getId());
                 }
 
                 @Override

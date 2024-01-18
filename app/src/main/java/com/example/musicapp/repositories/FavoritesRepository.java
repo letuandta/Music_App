@@ -6,6 +6,7 @@ import com.example.musicapp.MyApplication;
 
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -13,28 +14,8 @@ public class FavoritesRepository {
 
     public void addSong(Song song) {
 
-        Number songId = MyApplication.musicAppRealm.where(Song.class).max("_id");
-        Number artistId = MyApplication.musicAppRealm.where(Artist.class).max("_id");
-        long nextSongId;
-        long nextArtistId;
-
-        if(songId == null){
-            nextSongId = 1;
-        } else {
-            nextSongId = songId.intValue() + 1;
-        }
-
-        if(artistId == null){
-            nextArtistId = 1;
-        } else {
-            nextArtistId = artistId.intValue() + 1;
-        }
-
-        song.setId(nextSongId);
-        song.getArtist().setId(nextArtistId);
-
         MyApplication.musicAppRealm.executeTransaction(r -> {
-            MyApplication.musicAppRealm.insert(song);
+            MyApplication.musicAppRealm.copyToRealmOrUpdate(song);
         });
     }
 
@@ -45,8 +26,21 @@ public class FavoritesRepository {
 
     public RealmResults<Song> readSongRealmResult(){
         return MyApplication.musicAppRealm.where(Song.class)
-                .sort("_id", Sort.DESCENDING)
+                .sort("id", Sort.DESCENDING)
                 .limit(10)
                 .findAll();
+    }
+
+    public boolean exists(String id){
+        Song result = MyApplication.musicAppRealm.where(Song.class)
+                .equalTo("id", id)
+                .findFirst();
+        return result != null && id.equals(result.getId());
+    }
+
+    public void deleteSong(Song song){
+        MyApplication.musicAppRealm.executeTransaction(realm -> {
+            realm.where(Song.class).equalTo("id", song.getId()).findAll().deleteAllFromRealm();
+        });
     }
 }

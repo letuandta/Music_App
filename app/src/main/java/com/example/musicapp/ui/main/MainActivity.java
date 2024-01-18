@@ -7,6 +7,7 @@ import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION
 import static com.example.musicapp.common.AppConstants.MusicPlayerType.FAVORITES_SONG;
 import static com.example.musicapp.common.AppConstants.MusicPlayerType.RECOMMEND_SONG;
 import static com.example.musicapp.common.AppConstants.MusicPlayerType.SEARCH_SONG;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -23,11 +24,14 @@ import android.widget.TextView;
 
 import com.example.musicapp.R;
 import com.example.musicapp.common.AppConstants;
+import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.ActivityMainBinding;
 import com.example.musicapp.services.MusicPlayerService;
 import com.example.musicapp.ui.favorite.FavoritesFragment;
 import com.example.musicapp.ui.list.ListSongActivity;
 import com.example.musicapp.ui.recommend.RecommendsFragment;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity  {
     //<!-- region declare -->
@@ -84,17 +88,19 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void setEventSearch() {
-        binding.edtSearch.setOnEditorActionListener((textView, actionId, keyEvent) -> {
-            if(actionId == EditorInfo.IME_ACTION_DONE){
-                Intent intent = new Intent(MainActivity.this, ListSongActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString(TYPE, SEARCH_SONG);
-                bundle.putString(KEY_SEARCH, textView.getText().toString());
-                intent.putExtras(bundle);
-                startActivity(intent);
-                return true;
+        binding.searchIcon.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, ListSongActivity.class);
+            Bundle bundle = new Bundle();
+            try {
+                if(InternetConnection.isConnected())
+                    bundle.putString(TYPE, SEARCH_SONG);
+                else bundle.putString(TYPE, SEARCH_SONG_OFFLINE);
+            } catch (InterruptedException | IOException e) {
+                throw new RuntimeException(e);
             }
-            return false;
+            bundle.putString(KEY_SEARCH, binding.edtSearch.getText().toString());
+            intent.putExtras(bundle);
+            startActivity(intent);
         });
     }
 

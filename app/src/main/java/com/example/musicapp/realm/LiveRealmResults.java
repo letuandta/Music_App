@@ -44,7 +44,7 @@ public class LiveRealmResults<T extends RealmModel > extends MutableLiveData<Lis
     @Override
     protected void onInactive() {
         super.onInactive();
-        if (results.isValid()) {
+        if (!results.isValid()) {
             results.removeChangeListener(listener);
         }
     }

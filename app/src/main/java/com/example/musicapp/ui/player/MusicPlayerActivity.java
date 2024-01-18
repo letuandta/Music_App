@@ -22,32 +22,39 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.R;
+import com.example.musicapp.common.TimeFormat;
 import com.example.musicapp.databinding.ActivityPlayMusicBinding;
 import com.example.musicapp.models.Song;
 import com.example.musicapp.services.MusicPlayerService;
 import com.google.gson.Gson;
 
-public class MusicPlayerActivity extends AppCompatActivity {
+import java.util.Objects;
+
+public class MusicPlayerActivity extends AppCompatActivity implements MusicPlayerViewModel.MusicPlayerCallBack {
 
     ActivityPlayMusicBinding binding;
-    Bundle songsBundle;
-    Song song;
+    Song song = new Song();
     int position = 0, total, action, currentDuration = 0, duration;
     boolean isPlaying;
     Handler handler = new Handler();
     Runnable seekBarRunnable;
     Gson gson = new Gson();
+    MusicPlayerViewModel viewModel;
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -55,6 +62,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
             Bundle bundle = intent.getExtras();
             if(bundle != null) {
                 song = gson.fromJson(bundle.getString(SONG_JSON), Song.class);
+                viewModel.getMutableLiveData().setValue(song);
                 position = bundle.getInt(POSITION, -1);
                 isPlaying = bundle.getBoolean(IS_PLAYING);
                 total = bundle.getInt(TOTAL);
@@ -74,16 +82,16 @@ public class MusicPlayerActivity extends AppCompatActivity {
         registerReceiverAction();
         sendInitDataToService();
 
-        setEventClickNextMusic();
-        setEventClickPreviousMusic();
-        setEventClickPlayOrPauseMusic();
-
         setEventChangeProgressSeekbar();
 
     }
 
     private void inflateBinding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_play_music);
+        viewModel = new ViewModelProvider(this).get(MusicPlayerViewModel.class);
+        viewModel.setCallBack(this);
+        binding.setViewModel(viewModel);
+        binding.setLifecycleOwner(this);
     }
     private void setEventChangeProgressSeekbar() {
         binding.seekBarSong.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -109,37 +117,32 @@ public class MusicPlayerActivity extends AppCompatActivity {
         });
 
     }
-    private void setEventClickNextMusic() {
-        binding.iconNext.setOnClickListener(view -> {
-            handleOnClickIcon(ACTION_NEXT);
-        });
-    }
-    private void setEventClickPreviousMusic() {
-        binding.iconPrevious.setOnClickListener(view -> {
-            handleOnClickIcon(ACTION_PREVIOUS);
-        });
-    }
-    private void setEventClickPlayOrPauseMusic() {
-        binding.iconPlayPause.setOnClickListener(view -> {
-            handleOnClickIcon(ACTION_PLAY_OR_PAUSE);
-        });
-    }
     private void sendInitDataToService() {
         Intent intent = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
-        intent.putExtras(getIntent().getExtras());
+        intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
         this.startService(intent);
     }
     private void registerReceiverAction() {
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(ACTION_SEND_DATA_TO_ACTIVITY));
     }
 
-    private void handleOnClickIcon(int action){
-
+    @Override
+    public void handleOnClickIcon(int action){
         Intent intentService = new Intent(MusicPlayerActivity.this, MusicPlayerService.class);
         Bundle bundle = new Bundle();
         bundle.putInt(ACTION_MUSIC, action);
         intentService.putExtras(bundle);
         this.startService(intentService);
+    }
+
+    @Override
+    public void addFavorite(boolean isFavorite) {
+        if(isFavorite) {
+            binding.iconFavorite.setColorFilter(Color.argb(255, 255, 0, 0));
+            Toast.makeText(this, "Add song into favorites list success", Toast.LENGTH_LONG).show();
+        }
+        else
+            binding.iconFavorite.setColorFilter(Color.argb(255, 255, 255, 255));
     }
 
     private void handleLayoutMusic(int action){
@@ -162,7 +165,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
             case ACTION_CHANGE_SHUFFLE:
                 break;
             case ACTION_CHANGE_LOOPING:
-                break;
         }
     }
 
@@ -174,14 +176,12 @@ public class MusicPlayerActivity extends AppCompatActivity {
         }
         binding.total.setText(String.valueOf(total));
         binding.position.setText(String.valueOf(position + 1));
-        binding.titleSong.setText(String.valueOf(song.getTitle()));
-        binding.artistSong.setText(String.valueOf(song.getArtist().getName()));
         Glide.with(this)
                 .asBitmap()
                 .load(song.getArtist().getPicture())
                 .into(binding.pictureSong);
         binding.seekBarSong.setMax(duration);
-        binding.durationTotal.setText(formattedTime(duration));
+        binding.durationTotal.setText(TimeFormat.formattedTime(duration));
         currentDuration = 0;
         binding.seekBarSong.setProgress(currentDuration);
 
@@ -189,7 +189,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 binding.seekBarSong.setProgress(currentDuration++);
-                binding.durationPlayed.setText(formattedTime(currentDuration));
+                binding.durationPlayed.setText(TimeFormat.formattedTime(currentDuration));
 
                 if(currentDuration < duration){
                     handler.postDelayed(this, 1000);
@@ -202,21 +202,14 @@ public class MusicPlayerActivity extends AppCompatActivity {
         MusicPlayerActivity.this.runOnUiThread(seekBarRunnable);
     }
 
-    private String formattedTime(int currentDuration) {
-        String time = "";
-        String seconds = String.valueOf(currentDuration % 60);
-        String minutes = String.valueOf(currentDuration / 60);
-        time = minutes + ":" + seconds;
-        return time;
-    }
-
     private void previousMusic() {
-        handler.removeCallbacks(seekBarRunnable);
+        handler.removeCallbacksAndMessages(null);
         startMusic();
     }
 
     private void nextMusic() {
-        handler.removeCallbacks(seekBarRunnable);
+        Log.e("TAG", "nextMusic: " );
+        handler.removeCallbacksAndMessages(null);
         startMusic();
     }
 

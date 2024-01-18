@@ -26,10 +26,11 @@ public class AppConstants {
     }
 
     public final static class MusicPlayerType {
-        public static final String FAVORITES_SONG = "recommend_song";
-        public static final String RECOMMEND_SONG = "favorites_song";
+        public static final String FAVORITES_SONG = "favorites_song";
+        public static final String RECOMMEND_SONG = "recommend_song";
 
         public static final String SEARCH_SONG = "search_song";
+        public static final String SEARCH_SONG_OFFLINE = "search_song_offline";
     }
 
 }

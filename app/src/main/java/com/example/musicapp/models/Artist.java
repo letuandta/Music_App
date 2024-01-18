@@ -13,7 +13,7 @@ import io.realm.annotations.RealmClass;
 public class Artist implements Serializable, RealmModel {
 
     @PrimaryKey
-    private long _id;
+    private String id;
     @SerializedName("picture_medium")
     private String picture;
 
@@ -27,12 +27,12 @@ public class Artist implements Serializable, RealmModel {
         this.name = name;
     }
 
-    public long getId() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void setId(long _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getPicture() {

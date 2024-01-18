@@ -1,9 +1,11 @@
 package com.example.musicapp.repositories;
 
 import com.example.musicapp.MyApplication;
+import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.models.Song;
 import com.example.musicapp.models.recommend.RecommendSong;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +16,18 @@ public class SearchRepository {
         songs = (List<Song>) MyApplication.musicAppRealm.copyFromRealm(MyApplication.musicAppRealm.where(Song.class)
                 .contains("title", key)
                 .findAll());
-        recommendSongs = (List<RecommendSong>) MyApplication.musicAppRealm.copyFromRealm(MyApplication.musicAppRealm.where(RecommendSong.class)
-                .contains("title", key)
-                .findAll());
-        songs.addAll(parseToListSong(recommendSongs));
+        try {
+            if(InternetConnection.isConnected())
+            {
+                recommendSongs = (List<RecommendSong>) MyApplication.musicAppRealm.copyFromRealm(MyApplication.musicAppRealm.where(RecommendSong.class)
+                        .contains("title", key)
+                        .findAll());
+                songs.addAll(parseToListSong(recommendSongs));
+            }
+
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        }
         return songs;
     }
 

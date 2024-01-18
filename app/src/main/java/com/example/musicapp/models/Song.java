@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 
 import io.realm.RealmModel;
-import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
 
@@ -13,7 +12,7 @@ import io.realm.annotations.RealmClass;
 public class Song implements Serializable, RealmModel {
 
     @PrimaryKey
-    private long _id;
+    private String id;
 
     private String title;
 
@@ -33,12 +32,12 @@ public class Song implements Serializable, RealmModel {
         this.artist = artist;
     }
 
-    public long getId() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void setId(long _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -80,6 +79,6 @@ public class Song implements Serializable, RealmModel {
         if(obj == null) return false;
         if (obj.getClass() != this.getClass()) return false;
         final Song other = (Song) obj;
-        return this._id == other.getId();
+        return this.id.equals(other.getId());
     }
 }

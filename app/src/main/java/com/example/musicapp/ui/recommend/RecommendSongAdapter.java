@@ -23,7 +23,7 @@ public class RecommendSongAdapter extends ListAdapter<Song, RecommendViewHolder>
     @Override
     public RecommendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_song, parent, false);
-        return new RecommendViewHolder(itemView);
+        return new RecommendViewHolder(itemView, parent.getContext());
     }
 
     @Override

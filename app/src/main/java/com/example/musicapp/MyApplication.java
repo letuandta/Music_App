@@ -3,6 +3,7 @@ package com.example.musicapp;
 import android.app.Application;
 
 import com.example.musicapp.repositories.FavoritesRepository;
+import com.example.musicapp.repositories.OfflineRepository;
 import com.example.musicapp.repositories.RecommendsRepository;
 import com.example.musicapp.repositories.SearchRepository;
 
@@ -18,6 +19,8 @@ public class MyApplication extends Application {
     public static FavoritesRepository mFavoritesRepository;
 
     public static SearchRepository mSearchRepository;
+
+    public static OfflineRepository mOfflineRepository;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -36,5 +39,6 @@ public class MyApplication extends Application {
         mFavoritesRepository = new FavoritesRepository();
         mRecommendsRepository = new RecommendsRepository();
         mSearchRepository = new SearchRepository();
+        mOfflineRepository = new OfflineRepository();
     }
 }

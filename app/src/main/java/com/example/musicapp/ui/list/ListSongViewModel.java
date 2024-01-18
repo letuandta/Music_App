@@ -26,9 +26,10 @@ public class ListSongViewModel extends ViewModel {
             mutableLiveData.setValue(MyApplication.mRecommendsRepository.readDataFromLocal());
         }
 
-        if(dataType.equals(AppConstants.MusicPlayerType.SEARCH_SONG)){
+        if(dataType.equals(AppConstants.MusicPlayerType.SEARCH_SONG) || dataType.equals(AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE)){
             mutableLiveData.setValue(MyApplication.mSearchRepository.getListFromKey(key));
         }
+
     }
 
     public MutableLiveData<List<Song>> getMutableLiveData() {

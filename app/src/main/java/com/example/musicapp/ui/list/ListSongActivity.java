@@ -3,6 +3,8 @@ package com.example.musicapp.ui.list;
 import static com.example.musicapp.common.AppConstants.MusicBundleKey.KEY_SEARCH;
 import static com.example.musicapp.common.AppConstants.MusicBundleKey.POSITION;
 import static com.example.musicapp.common.AppConstants.MusicBundleKey.TYPE;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.FAVORITES_SONG;
+import static com.example.musicapp.common.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -71,15 +73,15 @@ public class ListSongActivity extends AppCompatActivity implements ListSongAdapt
     @Override
     public void onClickItem(int position) {
         try {
-            if(InternetConnection.isConnected()){
-                Bundle bundle = new Bundle();
+            Bundle bundle = new Bundle();
 
-                bundle.putString(TYPE, typeData);
-                bundle.putInt(POSITION, position);
-                bundle.putString(KEY_SEARCH, keySearch);
+            bundle.putString(TYPE, typeData);
+            bundle.putInt(POSITION, position);
+            bundle.putString(KEY_SEARCH, keySearch);
 
-                Intent intent = new Intent(this, MusicPlayerActivity.class);
-                intent.putExtras(bundle);
+            Intent intent = new Intent(this, MusicPlayerActivity.class);
+            intent.putExtras(bundle);
+            if(InternetConnection.isConnected() || typeData.equals(FAVORITES_SONG) || typeData.equals(SEARCH_SONG_OFFLINE)){
                 startActivity(intent);
             }else {
                 Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
