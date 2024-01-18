@@ -98,7 +98,6 @@ public class MusicPlayerService extends Service {
             case SEARCH_SONG_OFFLINE:
                 songs = MyApplication.mSearchRepository.getListFromKey(keySearch);
                 break;
-
         }
         startMusic();
     }

@@ -141,8 +141,14 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
             binding.iconFavorite.setColorFilter(Color.argb(255, 255, 0, 0));
             Toast.makeText(this, "Add song into favorites list success", Toast.LENGTH_LONG).show();
         }
-        else
+    }
+
+    @Override
+    public void deleteFavorite(boolean isSuccess) {
+        if(isSuccess) {
             binding.iconFavorite.setColorFilter(Color.argb(255, 255, 255, 255));
+            Toast.makeText(this, "delete song success", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void handleLayoutMusic(int action){

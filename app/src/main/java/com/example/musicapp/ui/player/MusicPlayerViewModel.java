@@ -68,11 +68,20 @@ public class MusicPlayerViewModel extends ViewModel {
             } catch (Exception e) {
                 Log.e("FAVORITES LIST", "can't add song into favorites list");
             }
+        }else{
+            try{
+                MyApplication.mFavoritesRepository.deleteSong(mutableLiveData.getValue());
+                isFavorite = false;
+                callBack.deleteFavorite(true);
+            }catch (Exception e) {
+                Log.e("FAVORITES LIST", "can't delete song into favorites list");
+            }
         }
     }
 
     public interface MusicPlayerCallBack{
         void handleOnClickIcon(int action);
         void addFavorite(boolean isFavorite);
+        void deleteFavorite(boolean isSuccess);
     }
 }
