@@ -22,7 +22,7 @@ public class RecommendSongViewModel extends ViewModel {
         mutableLiveData = new MutableLiveData<>();
     }
 
-    public void initData() throws IOException, InterruptedException {
+    public void initData() throws IOException, InterruptedException { // TODO: no need to check internet
         if(context != null && InternetConnection.isConnected()){
             MyApplication.mRecommendsRepository.loadDataFromApi(mutableLiveData);
         }else{

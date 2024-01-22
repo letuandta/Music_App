@@ -13,6 +13,7 @@ import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.RealmModel;
 import io.realm.RealmResults;
 
+// TODO: https://github.com/realm/realm-java/blob/main/examples/architectureComponentsExample/src/main/java/io/realm/examples/arch/livemodel/LiveRealmResults.java
 public class LiveRealmResults<T extends RealmModel > extends MutableLiveData<List<T>> {
     private final RealmResults<T> results;
 

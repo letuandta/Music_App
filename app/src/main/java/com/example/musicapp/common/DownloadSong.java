@@ -7,7 +7,7 @@ import android.os.Environment;
 
 import com.example.musicapp.models.Song;
 
-public class DownloadSong {
+public class DownloadSong { // TODO: can use a utils class
     public static void downloadMp3(Context context, Song song){
         String fileName = song.getId() + ".mp3";
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(song.getPreview()));

@@ -72,6 +72,7 @@ public class MusicPlayerService extends Service {
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
             getDataFromBundle(bundle);
+            // TODO: Can combine 2 if
             if(isTypeExist()) {
                 if(isValidPosition())
                     handleTypeData(type);
@@ -139,7 +140,7 @@ public class MusicPlayerService extends Service {
                 break;
             case ACTION_STOP:
                 sendIntentToActivity(ACTION_STOP);
-                stopForeground(true);
+                stopForeground(true); //
                 stopSelf();
                 break;
             case ACTION_CHANGE_SHUFFLE:
@@ -223,6 +224,7 @@ public class MusicPlayerService extends Service {
         sendIntentToActivity(ACTION_PLAY_OR_PAUSE);
     }
 
+    // TODO: still counted as duplicated code
     void nextMusic(){
         if(position < songs.size() - 1){
             position = position + 1;

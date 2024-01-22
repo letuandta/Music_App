@@ -32,7 +32,7 @@ public class MusicPlayerViewModel extends ViewModel {
         return mutableLiveData;
     }
 
-    public void setCallBack(MusicPlayerCallBack callBack) {
+    public void setCallBack(MusicPlayerCallBack callBack) { // TODO: Bad practice
         this.callBack = callBack;
     }
 

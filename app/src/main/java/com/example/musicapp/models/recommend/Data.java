@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Data {
+public class Data { // TODO: can use generic wrapper
     @SerializedName("data")
     private List<Song> data;
 
