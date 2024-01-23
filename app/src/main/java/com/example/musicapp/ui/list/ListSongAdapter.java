@@ -5,18 +5,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.example.musicapp.R;
-import com.example.musicapp.common.DiffCallback;
-import com.example.musicapp.models.Song;
+import com.example.musicapp.utils.DiffCallbackUtils;
+import com.example.musicapp.data.model.local.Song;
 
 public class ListSongAdapter extends ListAdapter<Song, ListSongViewHolder> {
 
     ListSongListener listener;
     protected ListSongAdapter(ListSongListener listener) {
-        super(DiffCallback.DIFF_CALLBACK_SONG);
+        super(DiffCallbackUtils.DIFF_CALLBACK_SONG);
         this.listener = listener;
     }
 

@@ -1,87 +1,82 @@
 package com.example.musicapp.ui.player;
 
-import android.content.Context;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.ACTION_MUSIC;
+
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.databinding.Bindable;
 import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.musicapp.MyApplication;
-import com.example.musicapp.models.Song;
+import com.example.musicapp.data.AppDataManager;
+import com.example.musicapp.data.model.local.Song;
+import com.example.musicapp.services.MusicPlayerService;
+import com.example.musicapp.ui.base.BaseViewModel;
 
 import java.io.File;
 import java.util.Objects;
 
 
-public class MusicPlayerViewModel extends ViewModel {
-    private MutableLiveData<Song> mutableLiveData;
-    private MusicPlayerCallBack callBack;
-    private static boolean isFavorite;
+public class MusicPlayerViewModel extends BaseViewModel {
+    private final MutableLiveData<Song> mutableLiveData;
 
-    public MusicPlayerViewModel() {
-        Song song = new Song();
-        mutableLiveData = new MutableLiveData<>(song);
+    public ObservableBoolean isFavorite = new ObservableBoolean(false);
+
+    public MusicPlayerViewModel(AppDataManager appDataManager) {
+        super(appDataManager);
+        mutableLiveData = new MutableLiveData<>();
     }
 
     public MutableLiveData<Song> getMutableLiveData() {
         return mutableLiveData;
     }
 
-    public void setCallBack(MusicPlayerCallBack callBack) { // TODO: Bad practice
-        this.callBack = callBack;
+    public void checkFavorite(){
+        isFavorite.set(mDataManager.mRealmRepository.existsSong(getMutableLiveData().getValue()));
     }
 
-    public MusicPlayerCallBack getCallBack() {
-        return callBack;
-    }
-
-    @BindingAdapter("myIconColor")
-    public static void setBackgroundColor(ImageView view, String id){
-        Log.e("ChangeColorIcon", "progress");
-        if(id != null && !id.isEmpty()) {
-            if (MyApplication.mFavoritesRepository.exists(id)) {
-                view.setColorFilter(Color.argb(255, 255, 0, 0));
-                isFavorite = true;
-            }
-            else {
-                view.setColorFilter(Color.argb(255, 255, 255, 255));
-                isFavorite = false;
-            }
+    @BindingAdapter("isFavorite")
+    public static void setColorFavoriteIcon(ImageView view, boolean is){
+        if(is){
+            view.setColorFilter(Color.argb(255, 255, 0, 0));
+        }
+        else {
+            view.setColorFilter(Color.argb(255, 255, 255, 255));
         }
     }
 
     public void addFavorite(View view){
-        if(!isFavorite){
+        if(!isFavorite.get()){
             try {
-                MyApplication.mFavoritesRepository.addSong(mutableLiveData.getValue());
+                mDataManager.mRealmRepository.addSong(mutableLiveData.getValue());
                 String fileName = Objects.requireNonNull(mutableLiveData.getValue()).getId() + ".mp3";
-                File file = MyApplication.mOfflineRepository.getSong(view.getContext(), fileName);
+                File file = mDataManager.mUserDataRepository.getSong(fileName);
                 if (!file.exists())
-                    MyApplication.mOfflineRepository.downloadSong(view.getContext(), mutableLiveData.getValue());
-                isFavorite = true;
-                callBack.addFavorite(true);
+                    mDataManager.mUserDataRepository.downloadSong(mutableLiveData.getValue());
+                isFavorite.set(true);
             } catch (Exception e) {
                 Log.e("FAVORITES LIST", "can't add song into favorites list");
             }
         }else{
             try{
-                MyApplication.mFavoritesRepository.deleteSong(mutableLiveData.getValue());
-                isFavorite = false;
-                callBack.deleteFavorite(true);
+                mDataManager.mRealmRepository.deleteSong(mutableLiveData.getValue());
+                isFavorite.set(false);
             }catch (Exception e) {
                 Log.e("FAVORITES LIST", "can't delete song into favorites list");
             }
         }
     }
 
-    public interface MusicPlayerCallBack{
-        void handleOnClickIcon(int action);
-        void addFavorite(boolean isFavorite);
-        void deleteFavorite(boolean isSuccess);
+    public void handleOnClickIcon(View view, int action){
+        Intent intentService = new Intent(view.getContext(), MusicPlayerService.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt(ACTION_MUSIC, action);
+        intentService.putExtras(bundle);
+        view.getContext().startService(intentService);
     }
 }

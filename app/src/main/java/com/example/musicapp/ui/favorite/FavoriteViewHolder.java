@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.databinding.ItemFavoriteSongBinding;
-import com.example.musicapp.models.Song;
+import com.example.musicapp.data.model.local.Song;
 
 public class FavoriteViewHolder extends RecyclerView.ViewHolder {
     ItemFavoriteSongBinding binding;

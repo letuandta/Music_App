@@ -8,14 +8,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.example.musicapp.R;
-import com.example.musicapp.common.DiffCallback;
-import com.example.musicapp.models.Song;
+import com.example.musicapp.utils.DiffCallbackUtils;
+import com.example.musicapp.data.model.local.Song;
 
 public class FavoriteSongAdapter extends ListAdapter<Song, FavoriteViewHolder> {
     FavoritesSongListener listener;
 
     public FavoriteSongAdapter(FavoritesSongListener listener) {
-        super(DiffCallback.DIFF_CALLBACK_SONG);
+        super(DiffCallbackUtils.DIFF_CALLBACK_SONG);
         this.listener = listener;
     }
 

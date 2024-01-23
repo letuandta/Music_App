@@ -2,8 +2,7 @@
 <layout>
 
     <data>
-        <import type="com.example.musicapp.common.AppConstants.MusicPlayerActions"/>
-        <import type="android.widget.ImageView"/>
+        <import type="com.example.musicapp.utils.AppConstants.MusicPlayerActions"/>
         <variable
             name="viewModel"
             type="com.example.musicapp.ui.player.MusicPlayerViewModel" />
@@ -27,6 +26,7 @@
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:src="@drawable/ic_launcher_background"
+                app:setImageUrl="@{viewModel.mutableLiveData.artist.picture}"
                 android:layout_centerHorizontal="true"/>
 
         </RelativeLayout>
@@ -101,7 +101,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/baseline_favorite_24"
-                app:myIconColor="@{viewModel.mutableLiveData.id}"
+                app:isFavorite="@{viewModel.isFavorite}"
                 android:onClick="@{(view) -> viewModel.addFavorite(view)}"
             />
         </RelativeLayout>
@@ -158,7 +158,7 @@
                 android:layout_toEndOf="@id/icon_repeat"
                 android:layout_toStartOf="@id/icon_play_pause"
                 android:src="@drawable/skip_previous_24"
-                android:onClick="@{() -> viewModel.callBack.handleOnClickIcon(MusicPlayerActions.ACTION_PREVIOUS)}"
+                android:onClick="@{(view) -> viewModel.handleOnClickIcon(view, MusicPlayerActions.ACTION_PREVIOUS)}"
                 app:tint="@color/white" />
             <ImageView
                 android:id="@+id/icon_play_pause"
@@ -166,7 +166,7 @@
                 android:layout_height="60dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/play_arrow_24"
-                android:onClick="@{() -> viewModel.callBack.handleOnClickIcon(MusicPlayerActions.ACTION_PLAY_OR_PAUSE)}"
+                android:onClick="@{(view) -> viewModel.handleOnClickIcon(view, MusicPlayerActions.ACTION_PLAY_OR_PAUSE)}"
                 app:tint="@color/white" />
             <ImageView
                 android:id="@+id/icon_next"
@@ -176,7 +176,7 @@
                 android:layout_toEndOf="@id/icon_play_pause"
                 android:layout_toStartOf="@id/icon_shuffle"
                 android:src="@drawable/skip_next_24"
-                android:onClick="@{() -> viewModel.callBack.handleOnClickIcon(MusicPlayerActions.ACTION_NEXT)}"
+                android:onClick="@{(view) -> viewModel.handleOnClickIcon(view, MusicPlayerActions.ACTION_NEXT)}"
                 app:tint="@color/white" />
             <ImageView
                 android:id="@+id/icon_shuffle"

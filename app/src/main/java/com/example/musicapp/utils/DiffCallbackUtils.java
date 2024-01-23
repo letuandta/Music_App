@@ -1,13 +1,11 @@
-package com.example.musicapp.common;
-
-import android.util.Log;
+package com.example.musicapp.utils;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.example.musicapp.models.Song;
+import com.example.musicapp.data.model.local.Song;
 
-public class DiffCallback {
+public class DiffCallbackUtils {
 
     public static final DiffUtil.ItemCallback<Song> DIFF_CALLBACK_SONG =
             new DiffUtil.ItemCallback<Song>() {

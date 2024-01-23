@@ -2,17 +2,15 @@ package com.example.musicapp.repositories;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.musicapp.Api.SongService;
-import com.example.musicapp.models.Artist;
-import com.example.musicapp.models.Song;
-import com.example.musicapp.models.recommend.Data;
+import com.example.musicapp.data.remote.SongService;
+import com.example.musicapp.data.model.local.Song;
+import com.example.musicapp.data.model.api.Data;
 import com.example.musicapp.MyApplication;
-import com.example.musicapp.models.recommend.RecommendSong;
+import com.example.musicapp.data.model.local.RecommendSong;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,22 +57,22 @@ public class RecommendsRepository {
         return recommendSong;
     }
 
-    public void loadDataFromApi(MutableLiveData<List<Song>> liveData){
-        SongService.callApi.getSong("you")
-                .enqueue(new Callback<Data>() {
-                    @Override
-                    public void onResponse(Call<Data> call, Response<Data> response) {
-                        Data data = response.body();
-                        assert data != null;
-                        List<Song> songs = data.getData();
-                        addListSong(songs);
-                        liveData.setValue(songs);
-                    }
-
-                    @Override
-                    public void onFailure(Call<Data> call, Throwable t) {
-
-                    }
-                });
-    }
+//   // public void loadDataFromApi(MutableLiveData<List<Song>> liveData){
+//        SongService.callApi.getSong("you")
+//                .enqueue(new Callback<Data<Song>>() {
+//                    @Override
+//                    public void onResponse(Call<Data<Song>> call, Response<Data<Song>> response) {
+//                        Data<Song> data = response.body();
+//                        assert data != null;
+//                        List<Song> songs = data.getData();
+//                        addListSong(songs);
+//                        liveData.setValue(songs);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Data<Song>> call, Throwable t) {
+//
+//                    }
+//                });
+//    }
 }

@@ -1,4 +1,4 @@
-package com.example.musicapp.models;
+package com.example.musicapp.data.model.local;
 
 import com.google.gson.annotations.SerializedName;
 

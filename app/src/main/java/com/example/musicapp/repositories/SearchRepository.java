@@ -1,9 +1,9 @@
 package com.example.musicapp.repositories;
 
 import com.example.musicapp.MyApplication;
-import com.example.musicapp.common.InternetConnection;
-import com.example.musicapp.models.Song;
-import com.example.musicapp.models.recommend.RecommendSong;
+import com.example.musicapp.data.model.local.Song;
+import com.example.musicapp.data.model.local.RecommendSong;
+import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class SearchRepository {
                 .contains("title", key)
                 .findAll());
         try {
-            if(InternetConnection.isConnected())
+            if(NetworkUtils.isConnected())
             {
                 recommendSongs = (List<RecommendSong>) MyApplication.musicAppRealm.copyFromRealm(MyApplication.musicAppRealm.where(RecommendSong.class)
                         .contains("title", key)

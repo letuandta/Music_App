@@ -1,4 +1,4 @@
-package com.example.musicapp.common;
+package com.example.musicapp.utils;
 
 public class TimeFormat {
     public static String formattedTime(int currentDuration) {

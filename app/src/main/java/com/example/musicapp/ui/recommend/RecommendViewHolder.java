@@ -1,9 +1,7 @@
 package com.example.musicapp.ui.recommend;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,10 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.musicapp.MyApplication;
-import com.example.musicapp.R;
-import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.ItemSongBinding;
-import com.example.musicapp.models.Song;
+import com.example.musicapp.data.model.local.Song;
+import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,13 +36,13 @@ public class RecommendViewHolder extends RecyclerView.ViewHolder {
         binding.titleSongRecommend.setText(String.valueOf(song.getTitle()));
         binding.artistSongRecommend.setText(String.valueOf(song.getArtist().getName()));
         try {
-            if (!InternetConnection.isConnected()){
+            if (!NetworkUtils.isConnected()){
                 binding.btnAddIntoFavorite.setVisibility(View.INVISIBLE);
             }
             else {
                 binding.btnAddIntoFavorite.setOnClickListener(view -> {
                     try {
-                        if(!MyApplication.mFavoritesRepository.exists(song.getId()) && InternetConnection.isConnected()) {
+                        if(!MyApplication.mFavoritesRepository.exists(song.getId()) && NetworkUtils.isConnected()) {
                             MyApplication.mFavoritesRepository.addSong(song);
                             String fileName = song.getId() + ".mp3";
                             File file = MyApplication.mOfflineRepository.getSong(context, fileName);

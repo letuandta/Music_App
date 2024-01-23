@@ -1,7 +1,6 @@
-package com.example.musicapp.models.recommend;
+package com.example.musicapp.data.model.local;
 
 import androidx.annotation.Nullable;
-import com.example.musicapp.models.Artist;
 
 import java.io.Serializable;
 
@@ -10,7 +9,8 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
 
 @RealmClass
-public class RecommendSong implements Serializable, RealmModel {
+public class Song implements Serializable, RealmModel {
+
     @PrimaryKey
     private String id;
 
@@ -22,10 +22,10 @@ public class RecommendSong implements Serializable, RealmModel {
 
     private Artist artist;
 
-    public RecommendSong() {
+    public Song() {
     }
 
-    public RecommendSong(String title, int duration, String preview, Artist artist) {
+    public Song(String title, int duration, String preview, Artist artist) {
         this.title = title;
         this.duration = duration;
         this.preview = preview;
@@ -78,9 +78,7 @@ public class RecommendSong implements Serializable, RealmModel {
     public boolean equals(@Nullable Object obj) {
         if(obj == null) return false;
         if (obj.getClass() != this.getClass()) return false;
-        final RecommendSong other = (RecommendSong) obj;
+        final Song other = (Song) obj;
         return this.id.equals(other.getId());
     }
-
-
 }

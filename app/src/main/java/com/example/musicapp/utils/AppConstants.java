@@ -1,4 +1,4 @@
-package com.example.musicapp.common;
+package com.example.musicapp.utils;
 
 public class AppConstants {
     public final static class MusicBundleKey {

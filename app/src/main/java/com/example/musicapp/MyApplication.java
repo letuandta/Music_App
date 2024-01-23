@@ -2,6 +2,9 @@ package com.example.musicapp;
 
 import android.app.Application;
 
+import com.example.musicapp.di.component.AppComponent;
+//import com.example.musicapp.di.component.DaggerAppComponent;
+import com.example.musicapp.di.component.DaggerAppComponent;
 import com.example.musicapp.repositories.FavoritesRepository;
 import com.example.musicapp.repositories.OfflineRepository;
 import com.example.musicapp.repositories.RecommendsRepository;
@@ -14,31 +17,31 @@ public class MyApplication extends Application {
 
     public static Realm musicAppRealm;
 
-    public static RecommendsRepository mRecommendsRepository;
-
     public static FavoritesRepository mFavoritesRepository;
 
-    public static SearchRepository mSearchRepository;
-
     public static OfflineRepository mOfflineRepository;
+
+    public AppComponent appComponent;
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Realm.init(this);
+        appComponent = DaggerAppComponent.builder()
+                        .application(this)
+                        .build();
 
-        RealmConfiguration favoriteConfig = new RealmConfiguration.Builder()
+        Realm.init(this);
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
                 .name("music_app.realm")
                 .allowQueriesOnUiThread(true)
                 .allowWritesOnUiThread(true)
                 .deleteRealmIfMigrationNeeded().build();
 
-
-        musicAppRealm = Realm.getInstance(favoriteConfig);
+        Realm.setDefaultConfiguration(realmConfiguration);
+        musicAppRealm = Realm.getDefaultInstance();
 
         mFavoritesRepository = new FavoritesRepository();
-        mRecommendsRepository = new RecommendsRepository();
-        mSearchRepository = new SearchRepository();
+
         mOfflineRepository = new OfflineRepository();
     }
 }

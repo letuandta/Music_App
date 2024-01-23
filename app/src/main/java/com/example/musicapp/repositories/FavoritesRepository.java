@@ -1,12 +1,10 @@
 package com.example.musicapp.repositories;
 
-import com.example.musicapp.models.Artist;
-import com.example.musicapp.models.Song;
+import com.example.musicapp.data.model.local.Song;
 import com.example.musicapp.MyApplication;
 
 import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 

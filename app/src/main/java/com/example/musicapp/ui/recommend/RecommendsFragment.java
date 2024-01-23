@@ -1,13 +1,14 @@
 package com.example.musicapp.ui.recommend;
 
-import static com.example.musicapp.common.AppConstants.MusicBundleKey.POSITION;
-import static com.example.musicapp.common.AppConstants.MusicBundleKey.TYPE;
-import static com.example.musicapp.common.AppConstants.MusicPlayerType.RECOMMEND_SONG;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerType.RECOMMEND_SONG;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -16,26 +17,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.musicapp.common.InternetConnection;
+import com.example.musicapp.R;
 import com.example.musicapp.databinding.FragmentRecommendsBinding;
+import com.example.musicapp.di.component.FragmentComponent;
+import com.example.musicapp.ui.base.BaseFragment;
 import com.example.musicapp.ui.player.MusicPlayerActivity;
+import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.IOException;
 
 
-public class RecommendsFragment extends Fragment implements
+public class RecommendsFragment extends BaseFragment<FragmentRecommendsBinding, RecommendSongViewModel> implements
         RecommendSongAdapter.RecommendsSongListener{
 
     private RecommendSongAdapter recommendSongAdapter;
-    private RecommendSongViewModel recommendSongViewModel;
-
-    FragmentRecommendsBinding binding;
 
     public static RecommendsFragment newInstance() {
         return new RecommendsFragment();
     }
 
     private RecommendsFragment(){}
+
+    @Override
+    public int getBindingVariable() {
+        return BR.viewModel;
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.fragment_recommends;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,27 +62,30 @@ public class RecommendsFragment extends Fragment implements
         initAdapter();
         observerDataInViewModel();
 
-        return binding.getRoot();
+        return mViewDataBinding.getRoot();
+    }
+
+    @Override
+    public void performDependencyInjection(FragmentComponent buildComponent) {
+        buildComponent.inject(this);
     }
 
     private void inflateBinding(LayoutInflater inflater, ViewGroup container) {
-        binding = FragmentRecommendsBinding.inflate(inflater, container, false);
+        mViewDataBinding = FragmentRecommendsBinding.inflate(inflater, container, false);
     }
     private void initViewModel() {
-        recommendSongViewModel = new ViewModelProvider(this).get(RecommendSongViewModel.class);
-        recommendSongViewModel.setContext(getContext());
         try {
-            recommendSongViewModel.initData();
+            mViewModel.initData();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
     private void initAdapter() {
         recommendSongAdapter = new RecommendSongAdapter(this);
-        binding.rcvRecommendSong.setAdapter(recommendSongAdapter);
+        mViewDataBinding.rcvRecommendSong.setAdapter(recommendSongAdapter);
     }
     private void observerDataInViewModel() {
-        recommendSongViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> {
+        mViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> {
             recommendSongAdapter.submitList(songs);
         });
     }
@@ -79,7 +93,7 @@ public class RecommendsFragment extends Fragment implements
     @Override
     public void onClickRecommendItem(int position) {
         try {
-            if(InternetConnection.isConnected()){
+            if(NetworkUtils.isConnected()){
                 Bundle bundle = new Bundle();
                 bundle.putString(TYPE, RECOMMEND_SONG);
                 bundle.putInt(POSITION, position);

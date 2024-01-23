@@ -1,10 +1,10 @@
 package com.example.musicapp.ui.list;
 
-import static com.example.musicapp.common.AppConstants.MusicBundleKey.KEY_SEARCH;
-import static com.example.musicapp.common.AppConstants.MusicBundleKey.POSITION;
-import static com.example.musicapp.common.AppConstants.MusicBundleKey.TYPE;
-import static com.example.musicapp.common.AppConstants.MusicPlayerType.FAVORITES_SONG;
-import static com.example.musicapp.common.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.KEY_SEARCH;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerType.FAVORITES_SONG;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,20 +16,31 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.musicapp.BR;
 import com.example.musicapp.R;
-import com.example.musicapp.common.AppConstants;
-import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.databinding.ActivityListSongBinding;
+import com.example.musicapp.di.component.ActivityComponent;
+import com.example.musicapp.ui.base.BaseActivity;
 import com.example.musicapp.ui.player.MusicPlayerActivity;
+import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.IOException;
 
-public class ListSongActivity extends AppCompatActivity implements ListSongAdapter.ListSongListener {
+public class ListSongActivity extends BaseActivity<ActivityListSongBinding, ListSongViewModel> implements ListSongAdapter.ListSongListener {
 
-    ActivityListSongBinding binding;
-    ListSongViewModel listSongViewModel;
     ListSongAdapter listSongAdapter;
     String typeData, keySearch;
+
+    @Override
+    public int getBindingVariable() {
+        return BR.viewModel;
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_list_song;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +49,12 @@ public class ListSongActivity extends AppCompatActivity implements ListSongAdapt
         initViewModel();
         initAdapter();
         observerDataInViewModel();
-        setContentView(binding.getRoot());
+        setContentView(mViewDataBinding.getRoot());
+    }
+
+    @Override
+    public void performDependencyInjection(ActivityComponent buildComponent) {
+        buildComponent.inject(this);
     }
 
     private void getDataFromBundle() {
@@ -50,21 +66,20 @@ public class ListSongActivity extends AppCompatActivity implements ListSongAdapt
     }
 
     private void initViewModel() {
-        listSongViewModel = new ViewModelProvider(this).get(ListSongViewModel.class);
-        listSongViewModel.initData(typeData, keySearch);
+        mViewModel.initData(typeData, keySearch);
     }
 
     private void initAdapter() {
         listSongAdapter = new ListSongAdapter(this);
-        binding.rcvListSong.setAdapter(listSongAdapter);
+        mViewDataBinding.rcvListSong.setAdapter(listSongAdapter);
     }
 
     private void initBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_list_song);
+        mViewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_list_song);
     }
 
     private void observerDataInViewModel(){
-        listSongViewModel.getMutableLiveData().observe(this, songs -> {
+        mViewModel.getMutableLiveData().observe(this, songs -> {
             Log.e("TAG", "observerDataInViewModel: ");
             listSongAdapter.submitList(songs);
         });
@@ -81,7 +96,7 @@ public class ListSongActivity extends AppCompatActivity implements ListSongAdapt
 
             Intent intent = new Intent(this, MusicPlayerActivity.class);
             intent.putExtras(bundle);
-            if(InternetConnection.isConnected() || typeData.equals(FAVORITES_SONG) || typeData.equals(SEARCH_SONG_OFFLINE)){
+            if(NetworkUtils.isConnected() || typeData.equals(FAVORITES_SONG) || typeData.equals(SEARCH_SONG_OFFLINE)){
                 startActivity(intent);
             }else {
                 Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();

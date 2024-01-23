@@ -1,9 +1,9 @@
 package com.example.musicapp.notification;
 
-import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_NEXT;
-import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
-import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_PREVIOUS;
-import static com.example.musicapp.common.AppConstants.MusicPlayerActions.ACTION_STOP;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerActions.ACTION_NEXT;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerActions.ACTION_PLAY_OR_PAUSE;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerActions.ACTION_PREVIOUS;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerActions.ACTION_STOP;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.example.musicapp.R;
-import com.example.musicapp.models.Song;
+import com.example.musicapp.data.model.local.Song;
 import com.example.musicapp.receivers.MusicNotificationReceiver;
 
 public class MusicNotification{

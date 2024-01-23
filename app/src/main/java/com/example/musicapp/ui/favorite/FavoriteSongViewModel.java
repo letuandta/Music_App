@@ -1,23 +1,36 @@
 package com.example.musicapp.ui.favorite;
 
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.MutableLiveData;
 
-import com.example.musicapp.models.Song;
-import com.example.musicapp.realm.LiveRealmResults;
-import com.example.musicapp.MyApplication;
+import com.example.musicapp.data.AppDataManager;
+import com.example.musicapp.data.model.local.Song;
+import com.example.musicapp.ui.base.BaseViewModel;
 
-import io.realm.Sort;
+import java.util.List;
 
-public class FavoriteSongViewModel extends ViewModel {
-    private final LiveRealmResults<Song> liveRealmResults;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
-    public FavoriteSongViewModel() {
-        liveRealmResults = new LiveRealmResults<>(
-                MyApplication.mFavoritesRepository.readSongRealmResult()
-        );
+public class FavoriteSongViewModel extends BaseViewModel {
+
+    private final MutableLiveData<List<Song>> liveRealmResults;
+
+    public FavoriteSongViewModel(AppDataManager appDataManager) {
+        super(appDataManager);
+        liveRealmResults = new MutableLiveData<>();
+        init();
     }
 
-    public LiveRealmResults<Song> getLiveRealmResults() {
+    private void init(){
+        getCompositeDisposable().add(mDataManager.mRealmRepository
+                .getAllFavoriteSongFlowable()
+                .asFlowable()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(liveRealmResults::setValue));
+    }
+
+    public MutableLiveData<List<Song>> getLiveRealmResults() {
         return liveRealmResults;
     }
 }

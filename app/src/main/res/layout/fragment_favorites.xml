@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+    <data>
+        <variable
+            name="vieModel"
+            type="com.example.musicapp.ui.favorite.FavoriteSongViewModel" />
+    </data>
     <HorizontalScrollView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.musicapp.common.InternetConnection;
 import com.example.musicapp.services.MusicPlayerService;
 
 public class MusicNotificationReceiver extends BroadcastReceiver {
