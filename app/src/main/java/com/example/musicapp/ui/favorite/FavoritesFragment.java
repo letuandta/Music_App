@@ -9,24 +9,23 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.library.baseAdapters.BR;
-import androidx.fragment.app.Fragment;
+
 import androidx.lifecycle.ViewModelProvider;
-
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
+import com.example.musicapp.BR;
 import com.example.musicapp.R;
 import com.example.musicapp.databinding.FragmentFavoritesBinding;
 import com.example.musicapp.di.component.FragmentComponent;
 import com.example.musicapp.ui.base.BaseFragment;
-import com.example.musicapp.ui.player.MusicPlayerActivity;
 
-public class FavoritesFragment extends BaseFragment<FragmentFavoritesBinding, FavoriteSongViewModel> implements FavoriteSongAdapter.FavoritesSongListener{
+import javax.inject.Inject;
 
-    private FavoriteSongAdapter favoriteSongAdapter;
+public class FavoritesFragment extends BaseFragment<FragmentFavoritesBinding, FavoriteSongViewModel>{
+
+    @Inject
+    FavoriteSongAdapter favoriteSongAdapter;
 
     public static FavoritesFragment newInstance() {
         return new FavoritesFragment();
@@ -64,7 +63,6 @@ public class FavoritesFragment extends BaseFragment<FragmentFavoritesBinding, Fa
         mViewModel = new ViewModelProvider(this).get(FavoriteSongViewModel.class);
     }
     private void initAdapter(){
-        favoriteSongAdapter = new FavoriteSongAdapter(this);
         mViewDataBinding.rcvFavoriteSong.setAdapter(favoriteSongAdapter);
     };
     private void observerDataInViewModel(){
@@ -74,15 +72,4 @@ public class FavoritesFragment extends BaseFragment<FragmentFavoritesBinding, Fa
         });
     }
 
-    @Override
-    public void onClickItem(int position) {
-        Bundle bundle = new Bundle();
-
-        bundle.putString(TYPE, FAVORITES_SONG);
-        bundle.putInt(POSITION, position);
-
-        Intent intent = new Intent(getContext(), MusicPlayerActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
 }

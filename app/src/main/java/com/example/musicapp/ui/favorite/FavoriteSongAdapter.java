@@ -12,11 +12,9 @@ import com.example.musicapp.utils.DiffCallbackUtils;
 import com.example.musicapp.data.model.local.Song;
 
 public class FavoriteSongAdapter extends ListAdapter<Song, FavoriteViewHolder> {
-    FavoritesSongListener listener;
 
-    public FavoriteSongAdapter(FavoritesSongListener listener) {
+    public FavoriteSongAdapter() {
         super(DiffCallbackUtils.DIFF_CALLBACK_SONG);
-        this.listener = listener;
     }
 
     @NonNull
@@ -36,11 +34,7 @@ public class FavoriteSongAdapter extends ListAdapter<Song, FavoriteViewHolder> {
     public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
         Song song = getItem(position);
         if(song != null) {
-            holder.onBind(song, position, listener);
+            holder.onBind(song, position);
         }
-    }
-
-    public interface FavoritesSongListener{
-        void onClickItem(int position);
     }
 }

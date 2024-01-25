@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableBoolean;
@@ -17,8 +18,10 @@ import com.example.musicapp.data.AppDataManager;
 import com.example.musicapp.data.model.local.Song;
 import com.example.musicapp.services.MusicPlayerService;
 import com.example.musicapp.ui.base.BaseViewModel;
+import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 
@@ -51,24 +54,30 @@ public class MusicPlayerViewModel extends BaseViewModel {
     }
 
     public void addFavorite(View view){
-        if(!isFavorite.get()){
-            try {
-                mDataManager.mRealmRepository.addSong(mutableLiveData.getValue());
-                String fileName = Objects.requireNonNull(mutableLiveData.getValue()).getId() + ".mp3";
-                File file = mDataManager.mUserDataRepository.getSong(fileName);
-                if (!file.exists())
-                    mDataManager.mUserDataRepository.downloadSong(mutableLiveData.getValue());
-                isFavorite.set(true);
-            } catch (Exception e) {
-                Log.e("FAVORITES LIST", "can't add song into favorites list");
+        try {
+            if(!isFavorite.get()) {
+                if (NetworkUtils.isConnected()) {
+                    try {
+                        mDataManager.mRealmRepository.addSong(mutableLiveData.getValue());
+                        String fileName = Objects.requireNonNull(mutableLiveData.getValue()).getId() + ".mp3";
+                        File file = mDataManager.mUserDataRepository.getSong(fileName);
+                        if (!file.exists())
+                            mDataManager.mUserDataRepository.downloadSong(mutableLiveData.getValue());
+                        isFavorite.set(true);
+                    } catch (Exception e) {
+                        Log.e("FAVORITES LIST", "can't add song into favorites list");
+                    }
+                }else Toast.makeText(view.getContext(), "No internet", Toast.LENGTH_LONG).show();
+            }else{
+                try {
+                    mDataManager.mRealmRepository.deleteSong(mutableLiveData.getValue());
+                    isFavorite.set(false);
+                } catch (Exception e) {
+                    Log.e("FAVORITES LIST", "can't delete song into favorites list");
+                }
             }
-        }else{
-            try{
-                mDataManager.mRealmRepository.deleteSong(mutableLiveData.getValue());
-                isFavorite.set(false);
-            }catch (Exception e) {
-                Log.e("FAVORITES LIST", "can't delete song into favorites list");
-            }
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

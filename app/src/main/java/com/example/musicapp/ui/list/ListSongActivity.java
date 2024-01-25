@@ -26,7 +26,7 @@ import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.IOException;
 
-public class ListSongActivity extends BaseActivity<ActivityListSongBinding, ListSongViewModel> implements ListSongAdapter.ListSongListener {
+public class ListSongActivity extends BaseActivity<ActivityListSongBinding, ListSongViewModel> {
 
     ListSongAdapter listSongAdapter;
     String typeData, keySearch;
@@ -70,7 +70,7 @@ public class ListSongActivity extends BaseActivity<ActivityListSongBinding, List
     }
 
     private void initAdapter() {
-        listSongAdapter = new ListSongAdapter(this);
+        listSongAdapter = new ListSongAdapter(typeData, keySearch);
         mViewDataBinding.rcvListSong.setAdapter(listSongAdapter);
     }
 
@@ -83,26 +83,5 @@ public class ListSongActivity extends BaseActivity<ActivityListSongBinding, List
             Log.e("TAG", "observerDataInViewModel: ");
             listSongAdapter.submitList(songs);
         });
-    }
-
-    @Override
-    public void onClickItem(int position) {
-        try {
-            Bundle bundle = new Bundle();
-
-            bundle.putString(TYPE, typeData);
-            bundle.putInt(POSITION, position);
-            bundle.putString(KEY_SEARCH, keySearch);
-
-            Intent intent = new Intent(this, MusicPlayerActivity.class);
-            intent.putExtras(bundle);
-            if(NetworkUtils.isConnected() || typeData.equals(FAVORITES_SONG) || typeData.equals(SEARCH_SONG_OFFLINE)){
-                startActivity(intent);
-            }else {
-                Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
-            }
-        } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

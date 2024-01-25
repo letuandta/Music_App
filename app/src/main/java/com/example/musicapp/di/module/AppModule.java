@@ -36,12 +36,6 @@ public class AppModule {
 
     @Singleton
     @Provides
-    Realm provideRealm(){
-        return Realm.getDefaultInstance();
-    }
-
-    @Singleton
-    @Provides
     UserDataRepository provideUserDataRepository(AppUserDataRepository userDataRepository){
         return userDataRepository;
     }

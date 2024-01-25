@@ -1,36 +1,29 @@
 package com.example.musicapp.ui.recommend;
-
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
-import static com.example.musicapp.utils.AppConstants.MusicPlayerType.RECOMMEND_SONG;
-
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.library.baseAdapters.BR;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+
+import com.example.musicapp.BR;
 import com.example.musicapp.R;
 import com.example.musicapp.databinding.FragmentRecommendsBinding;
 import com.example.musicapp.di.component.FragmentComponent;
 import com.example.musicapp.ui.base.BaseFragment;
-import com.example.musicapp.ui.player.MusicPlayerActivity;
-import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 
-public class RecommendsFragment extends BaseFragment<FragmentRecommendsBinding, RecommendSongViewModel> implements
-        RecommendSongAdapter.RecommendsSongListener{
 
-    private RecommendSongAdapter recommendSongAdapter;
+public class RecommendsFragment extends BaseFragment<FragmentRecommendsBinding, RecommendSongViewModel>{
+
+    @Inject
+    RecommendSongAdapter recommendSongAdapter;
 
     public static RecommendsFragment newInstance() {
         return new RecommendsFragment();
@@ -81,33 +74,14 @@ public class RecommendsFragment extends BaseFragment<FragmentRecommendsBinding, 
         }
     }
     private void initAdapter() {
-        recommendSongAdapter = new RecommendSongAdapter(this);
         mViewDataBinding.rcvRecommendSong.setAdapter(recommendSongAdapter);
     }
     private void observerDataInViewModel() {
         mViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> {
             recommendSongAdapter.submitList(songs);
         });
-    }
-
-    @Override
-    public void onClickRecommendItem(int position) {
-        try {
-            if(NetworkUtils.isConnected()){
-                Bundle bundle = new Bundle();
-                bundle.putString(TYPE, RECOMMEND_SONG);
-                bundle.putInt(POSITION, position);
-
-                Intent intent = new Intent(getContext(), MusicPlayerActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
-
-            }else {
-                Toast.makeText(getContext(), "No Internet", Toast.LENGTH_SHORT).show();
-            }
-        } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        mViewModel.getMessage().observe(getViewLifecycleOwner(), message -> {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        });
     }
 }

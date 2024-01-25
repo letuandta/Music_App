@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.recommend;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
@@ -24,11 +25,11 @@ import io.reactivex.schedulers.Schedulers;
 public class RecommendSongViewModel extends BaseViewModel {
     private final MutableLiveData<List<Song>> mutableLiveData;
 
-
-    @Inject Context context;
+    private final MutableLiveData<String> message;
     public RecommendSongViewModel(AppDataManager appDataManager) {
         super(appDataManager);
         mutableLiveData = new MutableLiveData<>();
+        message = new MutableLiveData<>();
     }
 
     public void initData() throws IOException, InterruptedException {
@@ -47,14 +48,18 @@ public class RecommendSongViewModel extends BaseViewModel {
 
 
     private void handleError(Throwable error) {
-        Toast.makeText(context, "Error " + error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        message.setValue("Error " + error.getLocalizedMessage());
+        Log.e("ERROR", error.getLocalizedMessage());
     }
     private void handleSuccess(boolean b) {
-        Toast.makeText(context, "Get data success! ", Toast.LENGTH_SHORT).show();
+        message.setValue("Get data success! ");
     }
 
     public MutableLiveData<List<Song>> getMutableLiveData() {
         return mutableLiveData;
     }
 
+    public MutableLiveData<String> getMessage() {
+        return message;
+    }
 }

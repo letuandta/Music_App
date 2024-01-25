@@ -19,25 +19,27 @@ import io.realm.Sort;
 @Singleton
 public class AppRealmRepository implements RealmRepository{
 
-    Realm realm;
 
     @Inject
-    public AppRealmRepository(Realm realm) {
-        this.realm = realm;
+    public AppRealmRepository() {
     }
 
     @Override
     public void addSong(Song song) {
+        Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(r -> {
-            realm.copyToRealmOrUpdate(song);
+            r.copyToRealmOrUpdate(song);
         });
+        realm.close();
     }
 
     @Override
     public void addRecommendSong(RecommendSong song) {
+        Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(r -> {
-            realm.copyToRealmOrUpdate(song);
+            r.copyToRealmOrUpdate(song);
         });
+        realm.close();
     }
 
     @Override
@@ -47,17 +49,20 @@ public class AppRealmRepository implements RealmRepository{
 
     @Override
     public void addListRecommendSong(List<Song> list) {
-        realm.executeTransaction(realm -> realm.delete(RecommendSong.class));
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(realm1 -> realm1.delete(RecommendSong.class));
         list.forEach(song -> {
             addRecommendSong(parseToRecommendSong(song));
         });
+        realm.close();
     }
 
     @Override
     public List<Song> getAllFavoriteSong() {
+        Realm realm = Realm.getDefaultInstance();
         return  realm.where(Song.class)
                 .sort("id", Sort.DESCENDING)
-                .findAll();
+                .findAllAsync();
     }
 
     @Override
@@ -69,6 +74,7 @@ public class AppRealmRepository implements RealmRepository{
 
     @Override
     public List<Song> getAllRecommendSong() {
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<RecommendSong> realmResult = realm.where(RecommendSong.class)
                 .sort("id", Sort.DESCENDING)
                 .findAll();
@@ -77,6 +83,7 @@ public class AppRealmRepository implements RealmRepository{
 
     @Override
     public List<Song> getListSong(int quantity) {
+        Realm realm = Realm.getDefaultInstance();
         return realm.where(Song.class)
                 .sort("id", Sort.DESCENDING)
                 .limit(quantity)
@@ -85,6 +92,7 @@ public class AppRealmRepository implements RealmRepository{
 
     @Override
     public List<Song> getListRecommendSong(int quantity) {
+        Realm realm = Realm.getDefaultInstance();
         List<RecommendSong> realmResult = realm.where(RecommendSong.class)
                 .sort("id", Sort.DESCENDING)
                 .limit(quantity)
@@ -94,6 +102,7 @@ public class AppRealmRepository implements RealmRepository{
 
     @Override
     public List<Song> getListFromKey(String key) {
+            Realm realm = Realm.getDefaultInstance();
             List<Song> songs;
             List<RecommendSong> recommendSongs;
             songs = (List<Song>) realm.copyFromRealm(realm.where(Song.class)
@@ -116,6 +125,7 @@ public class AppRealmRepository implements RealmRepository{
 
     @Override
     public boolean existsSong(Song song) {
+        Realm realm = Realm.getDefaultInstance();
         Song result = realm.where(Song.class)
                 .equalTo("id", song.getId())
                 .findFirst();
@@ -124,9 +134,11 @@ public class AppRealmRepository implements RealmRepository{
 
     @Override
     public void deleteSong(Song song) {
-        realm.executeTransaction(realm -> {
-            realm.where(Song.class).equalTo("id", song.getId()).findAll().deleteAllFromRealm();
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(realm1 -> {
+            realm1.where(Song.class).equalTo("id", song.getId()).findAll().deleteAllFromRealm();
         });
+        realm.close();
     }
 
     public List<Song> parseToListSong(List<RecommendSong> recommendSongList) {

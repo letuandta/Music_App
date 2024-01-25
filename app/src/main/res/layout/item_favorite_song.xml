@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.musicapp.ui.favorite.ItemFavoriteViewModel" />
+    </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:background="@color/background"
         android:id="@+id/layout_favorites_song"
+        android:onClick="@{(view) -> viewModel.onClickItem(view)}"
         android:orientation="vertical">
 
         <ImageView
@@ -13,13 +19,14 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/ic_launcher_background"
+            setImageUrl="@{viewModel.song.artist.picture}"
             >
         </ImageView>
         <TextView
             android:id="@+id/title_song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title song"
+            android:text="@{viewModel.song.title, default=`title song`}"
             android:maxLength="14"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -28,7 +35,7 @@
             android:id="@+id/artist_song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="artist song"
+            android:text="@{viewModel.song.artist.name, default=`artist title`}"
             android:maxLength="14"
             android:textStyle="normal"
             android:textSize="15sp"/>

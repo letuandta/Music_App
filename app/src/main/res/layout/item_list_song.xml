@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.musicapp.ui.list.ItemListSongViewModel" />
+    </data>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:layout_marginTop="5dp"
+        android:onClick="@{(view) -> viewModel.onClickItem(view)}"
+        android:id="@+id/layout_recommends_song">
+
+        <ImageView
+            android:id="@+id/picture_song_recommend"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_launcher_background"
+            setImageUrl="@{viewModel.song.artist.picture}"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toEndOf="@id/picture_song_recommend"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp">
+
+            <TextView
+                android:id="@+id/title_song_recommend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:text="@{viewModel.song.title, default=`title song`}"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/artist_song_recommend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@{viewModel.song.artist.name, default=`artist title`}"
+                android:textStyle="normal"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+</layout>
