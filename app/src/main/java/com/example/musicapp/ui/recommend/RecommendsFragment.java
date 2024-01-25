@@ -76,11 +76,8 @@ public class RecommendsFragment extends BaseFragment<FragmentRecommendsBinding, 
         mViewDataBinding.rcvRecommendSong.setAdapter(recommendSongAdapter);
     }
     private void observerDataInViewModel() {
-        mViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> {
-            recommendSongAdapter.submitList(songs);
-        });
-        mViewModel.getMessage().observe(getViewLifecycleOwner(), message -> {
-            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        });
+        mViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), songs -> recommendSongAdapter.submitList(songs));
+        mViewModel.getMessage().observe(getViewLifecycleOwner()
+                , message -> Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show());
     }
 }

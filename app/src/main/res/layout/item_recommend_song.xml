@@ -54,6 +54,7 @@
             android:src="@drawable/add_24"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:onClick="@{(view) -> viewModel.onClickAddSong(view)}"
             android:contentDescription="add into favorite list"
             app:tint="@color/black"/>
 

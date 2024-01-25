@@ -65,7 +65,7 @@ public class MusicPlayerViewModel extends BaseViewModel {
                             mDataManager.mUserDataRepository.downloadSong(mutableLiveData.getValue());
                         isFavorite.set(true);
                     } catch (Exception e) {
-                        Log.e("FAVORITES LIST", "can't add song into favorites list");
+                        Log.e("ERROR", "Error: " + e.getMessage());
                     }
                 }else Toast.makeText(view.getContext(), "No internet", Toast.LENGTH_LONG).show();
             }else{
@@ -73,7 +73,7 @@ public class MusicPlayerViewModel extends BaseViewModel {
                     mDataManager.mRealmRepository.deleteSong(mutableLiveData.getValue());
                     isFavorite.set(false);
                 } catch (Exception e) {
-                    Log.e("FAVORITES LIST", "can't delete song into favorites list");
+                    Log.e("ERROR", "Error: " + e.getMessage());
                 }
             }
         } catch (InterruptedException | IOException e) {

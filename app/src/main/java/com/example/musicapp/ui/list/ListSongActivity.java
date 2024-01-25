@@ -1,30 +1,19 @@
 package com.example.musicapp.ui.list;
 
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.KEY_SEARCH;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
-import static com.example.musicapp.utils.AppConstants.MusicPlayerType.FAVORITES_SONG;
-import static com.example.musicapp.utils.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.musicapp.BR;
 import com.example.musicapp.R;
 import com.example.musicapp.databinding.ActivityListSongBinding;
 import com.example.musicapp.di.component.ActivityComponent;
 import com.example.musicapp.ui.base.BaseActivity;
-import com.example.musicapp.ui.player.MusicPlayerActivity;
-import com.example.musicapp.utils.NetworkUtils;
-
-import java.io.IOException;
 
 public class ListSongActivity extends BaseActivity<ActivityListSongBinding, ListSongViewModel> {
 

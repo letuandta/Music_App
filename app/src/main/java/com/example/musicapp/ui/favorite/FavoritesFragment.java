@@ -1,10 +1,4 @@
 package com.example.musicapp.ui.favorite;
-
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
-import static com.example.musicapp.utils.AppConstants.MusicPlayerType.FAVORITES_SONG;
-
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;

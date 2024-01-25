@@ -20,9 +20,9 @@ import com.example.musicapp.utils.NetworkUtils;
 import java.io.IOException;
 
 public class ItemListSongViewModel {
-    private ObservableField<Song> song = new ObservableField<>();;
-    private String type;
-    private String searchKey;
+    private final ObservableField<Song> song = new ObservableField<>();
+    private final String type;
+    private final String searchKey;
     private int position;
 
     public ItemListSongViewModel(Song song, String type, String searchKey, int position) {
@@ -34,6 +34,13 @@ public class ItemListSongViewModel {
 
     public ObservableField<Song> getSong() {
         return song;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public void onClickItem(View view){

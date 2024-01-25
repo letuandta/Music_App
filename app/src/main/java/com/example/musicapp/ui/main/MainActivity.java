@@ -9,9 +9,7 @@ import static com.example.musicapp.utils.AppConstants.MusicPlayerType.RECOMMEND_
 import static com.example.musicapp.utils.AppConstants.MusicPlayerType.SEARCH_SONG;
 import static com.example.musicapp.utils.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;

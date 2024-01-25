@@ -46,6 +46,8 @@ import com.example.musicapp.notification.MusicNotification;
 import com.example.musicapp.utils.NetworkUtils;
 
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -238,19 +240,11 @@ public class MusicPlayerService extends Service {
         sendIntentToActivity(action);
     }
 
-    private void sendIntentToActivity(int action){ // Recommend to use EventBus library
-        Intent intent = new Intent(ACTION_SEND_DATA_TO_ACTIVITY);
-        Bundle bundle = new Bundle();
-        bundle.putInt(ACTION_MUSIC, action);
-        bundle.putSerializable(SONG_JSON, songs.get(position));
-        bundle.putInt(POSITION, position);
-        bundle.putInt(TOTAL, songs.size());
-        bundle.putBoolean(IS_PLAYING, isPlaying);
-        bundle.putInt(DURATION, mediaPlayer.getDuration() / 1000);
-        Log.e("DURATION", String.valueOf(mediaPlayer.getDuration() / 1000));
-        intent.putExtras(bundle);
+    private void sendIntentToActivity(int action){
+        SendToActivityEvent event = new SendToActivityEvent(action, songs.get(position), position
+                , songs.size(), isPlaying, mediaPlayer.getDuration() / 1000);
 
-        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcastSync(intent);
+        EventBus.getDefault().post(event);
     }
 
     @Override
@@ -260,5 +254,23 @@ public class MusicPlayerService extends Service {
         mediaPlayer.release();
         mediaPlayer = null;
         MusicPlayerService.isServiceRunning = false;
+    }
+
+    public static class SendToActivityEvent{
+        public int action;
+        public Song song;
+        public int position;
+        public int total;
+        public boolean isPlaying;
+        public int duration;
+
+        public SendToActivityEvent(int action, Song song, int position, int total, boolean isPlaying, int duration) {
+            this.action = action;
+            this.song = song;
+            this.position = position;
+            this.total = total;
+            this.isPlaying = isPlaying;
+            this.duration = duration;
+        }
     }
 }

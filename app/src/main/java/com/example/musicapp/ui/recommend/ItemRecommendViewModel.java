@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class ItemRecommendViewModel {
-    private ObservableField<Song> song = new ObservableField<>();;
+    private final ObservableField<Song> song = new ObservableField<>();
     private int position;
 
     AppDataManager mDataManager;

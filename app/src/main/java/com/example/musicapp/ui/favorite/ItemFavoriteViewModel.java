@@ -10,13 +10,11 @@ import android.view.View;
 
 import androidx.databinding.ObservableField;
 
-import com.example.musicapp.data.AppDataManager;
 import com.example.musicapp.data.model.local.Song;
-import com.example.musicapp.ui.base.BaseViewModel;
 import com.example.musicapp.ui.player.MusicPlayerActivity;
 
 public class ItemFavoriteViewModel{
-    private ObservableField<Song> song = new ObservableField<>();
+    private final ObservableField<Song> song = new ObservableField<>();
     private int position;
 
     public ItemFavoriteViewModel(Song song, int position) {
