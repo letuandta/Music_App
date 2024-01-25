@@ -22,8 +22,7 @@ import javax.inject.Inject;
 
 public class RecommendsFragment extends BaseFragment<FragmentRecommendsBinding, RecommendSongViewModel>{
 
-    @Inject
-    RecommendSongAdapter recommendSongAdapter;
+    @Inject RecommendSongAdapter recommendSongAdapter;
 
     public static RecommendsFragment newInstance() {
         return new RecommendsFragment();

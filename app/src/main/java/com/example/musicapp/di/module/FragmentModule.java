@@ -50,7 +50,7 @@ public class FragmentModule {
     }
 
     @Provides
-    RecommendSongAdapter provideFavoriteAdapter(AppDataManager appDataManager){
+    RecommendSongAdapter provideRecommendAdapter(AppDataManager appDataManager){
         return new RecommendSongAdapter(appDataManager);
     }
 

@@ -24,8 +24,7 @@ import javax.inject.Inject;
 
 public class FavoritesFragment extends BaseFragment<FragmentFavoritesBinding, FavoriteSongViewModel>{
 
-    @Inject
-    FavoriteSongAdapter favoriteSongAdapter;
+    @Inject FavoriteSongAdapter favoriteSongAdapter;
 
     public static FavoritesFragment newInstance() {
         return new FavoritesFragment();
