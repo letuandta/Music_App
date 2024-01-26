@@ -1,14 +1,10 @@
 package com.example.musicapp.services;
 
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.ACTION_MUSIC;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.ACTION_SEND_DATA_TO_ACTIVITY;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.DURATION;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.IS_PLAYING;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.KEY_SEARCH;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.SKIP_DURATION;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.SONG_JSON;
-import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TOTAL;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.SONG_ID;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
 import static com.example.musicapp.utils.AppConstants.MusicPlayerActions.ACTION_CHANGE_LOOPING;
 import static com.example.musicapp.utils.AppConstants.MusicPlayerActions.ACTION_CHANGE_SHUFFLE;
@@ -36,7 +32,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.musicapp.MyApplication;
 import com.example.musicapp.data.AppDataManager;
@@ -54,7 +49,14 @@ import java.util.List;
 
 
 import javax.inject.Inject;
+import javax.security.auth.login.LoginException;
 
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.realm.RealmResults;
 
 public class MusicPlayerService extends Service {
     @Inject
@@ -62,10 +64,9 @@ public class MusicPlayerService extends Service {
     public static boolean isServiceRunning = false;
     List<? extends Song> songs;
     boolean isPlaying;
-    String type, keySearch;
+    String type, keySearch, songId;
     int actionMusic, skipDuration, position = 0;
     MediaPlayer mediaPlayer;
-
     MusicNotification notification = new MusicNotification();
 
     @Override
@@ -105,17 +106,32 @@ public class MusicPlayerService extends Service {
     private void handleTypeData(String type){
         switch (type){
             case RECOMMEND_SONG:
-                songs = mDataManager.mRealmRepository.getAllRecommendSong();
+                handleGetDatFromType(mDataManager.mRealmRepository.getAllRecommendSongFlowable());
                 break;
             case FAVORITES_SONG:
-                songs = mDataManager.mRealmRepository.getAllFavoriteSong();
+                handleGetDatFromType(mDataManager.mRealmRepository.getAllFavoriteSongFlowable());
                 break;
             case SEARCH_SONG:
             case SEARCH_SONG_OFFLINE:
-                songs = mDataManager.mRealmRepository.getListFromKey(keySearch);
+                handleGetDatFromType(mDataManager.mRealmRepository.getListFromKey(keySearch));
                 break;
         }
-        startMusic();
+    }
+    private void handleGetDatFromType(RealmResults<Song> list){
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(list.asFlowable()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(l -> {
+                    songs = l;
+                    Song song = songs.stream().filter(s -> s.getId().equals(songId)
+                    ).findAny().orElse(null);
+                    position = songs.indexOf(song);
+                    if(songs.size() > 0) {
+                        startMusic();
+                        compositeDisposable.dispose();
+                    }
+                }));
     }
 
     private void sendNotification(Context context, Song song, boolean isPlaying){
@@ -157,7 +173,7 @@ public class MusicPlayerService extends Service {
         actionMusic = bundle.getInt(ACTION_MUSIC, -1);
         skipDuration = bundle.getInt(SKIP_DURATION, -1);
         if(isTypeExistAndValidPosition()) {
-            position = bundle.getInt(POSITION, -1);
+            songId = bundle.getString(SONG_ID, "");
             keySearch = bundle.getString(KEY_SEARCH, "");
         }
     }

@@ -2,6 +2,7 @@ package com.example.musicapp.ui.list;
 
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.KEY_SEARCH;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.SONG_ID;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
 import static com.example.musicapp.utils.AppConstants.MusicPlayerType.FAVORITES_SONG;
 import static com.example.musicapp.utils.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
@@ -18,6 +19,7 @@ import com.example.musicapp.ui.player.MusicPlayerActivity;
 import com.example.musicapp.utils.NetworkUtils;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ItemListSongViewModel {
     private final ObservableField<Song> song = new ObservableField<>();
@@ -48,7 +50,7 @@ public class ItemListSongViewModel {
             Bundle bundle = new Bundle();
 
             bundle.putString(TYPE, type);
-            bundle.putInt(POSITION, position);
+            bundle.putString(SONG_ID, Objects.requireNonNull(song.get()).getId());
             bundle.putString(KEY_SEARCH, searchKey);
 
             Intent intent = new Intent(view.getContext(), MusicPlayerActivity.class);

@@ -34,7 +34,6 @@ public class ListSongActivity extends BaseActivity<ActivityListSongBinding, List
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getDataFromBundle();
-        initBinding();
         initViewModel();
         initAdapter();
         observerDataInViewModel();
@@ -61,10 +60,6 @@ public class ListSongActivity extends BaseActivity<ActivityListSongBinding, List
     private void initAdapter() {
         listSongAdapter = new ListSongAdapter(typeData, keySearch);
         mViewDataBinding.rcvListSong.setAdapter(listSongAdapter);
-    }
-
-    private void initBinding() {
-        mViewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_list_song);
     }
 
     private void observerDataInViewModel(){

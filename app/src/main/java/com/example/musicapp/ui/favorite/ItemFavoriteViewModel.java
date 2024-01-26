@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.favorite;
 
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.SONG_ID;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
 import static com.example.musicapp.utils.AppConstants.MusicPlayerType.FAVORITES_SONG;
 
@@ -12,6 +13,8 @@ import androidx.databinding.ObservableField;
 
 import com.example.musicapp.data.model.local.Song;
 import com.example.musicapp.ui.player.MusicPlayerActivity;
+
+import java.util.Objects;
 
 public class ItemFavoriteViewModel{
     private final ObservableField<Song> song = new ObservableField<>();
@@ -38,7 +41,7 @@ public class ItemFavoriteViewModel{
         Bundle bundle = new Bundle();
 
         bundle.putString(TYPE, FAVORITES_SONG);
-        bundle.putInt(POSITION, position);
+        bundle.putString(SONG_ID, Objects.requireNonNull(song.get()).getId());
 
         Intent intent = new Intent(view.getContext(), MusicPlayerActivity.class);
         intent.putExtras(bundle);

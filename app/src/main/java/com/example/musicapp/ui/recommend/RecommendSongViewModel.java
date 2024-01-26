@@ -1,5 +1,7 @@
 package com.example.musicapp.ui.recommend;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.musicapp.data.AppDataManager;
@@ -32,12 +34,18 @@ public class RecommendSongViewModel extends BaseViewModel {
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::handleSuccess, this::handleError));
-        mutableLiveData.setValue(mDataManager.mRealmRepository.getListRecommendSong(10));
+        getCompositeDisposable().add(mDataManager.mRealmRepository
+                .getListRecommendSong(10)
+                .asFlowable()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mutableLiveData::setValue));
     }
 
 
     private void handleError(Throwable error) {
         message.setValue("Error " + error.getLocalizedMessage());
+        Log.e("ERROR", "error: " + error.getMessage());
     }
     private void handleSuccess(boolean b) {
         message.setValue("Get data success! ");

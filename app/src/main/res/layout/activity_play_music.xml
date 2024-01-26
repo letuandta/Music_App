@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="com.example.musicapp.utils.AppConstants.MusicPlayerActions"/>
         <variable
             name="viewModel"
             type="com.example.musicapp.ui.player.MusicPlayerViewModel" />
     </data>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
         android:orientation="vertical"
         android:padding="10dp">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            progressing="@{viewModel.isLoading}">
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+            </ProgressBar>
+        </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -187,7 +197,5 @@
                 android:src="@drawable/shuffle_24"
                 app:tint="@color/white" />
         </RelativeLayout>
-
-
     </LinearLayout>
 </layout>

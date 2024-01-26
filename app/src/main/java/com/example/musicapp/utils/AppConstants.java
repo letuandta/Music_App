@@ -5,6 +5,7 @@ public class AppConstants {
         public static final String ACTION_MUSIC = "action_music";
         public static final String SONG_JSON = "song_json";
         public static final String POSITION = "position";
+        public static final String SONG_ID = "song_id";
         public static final String TOTAL = "total";
         public static final String IS_PLAYING = "is_playing";
         public static final String DURATION = "duration";

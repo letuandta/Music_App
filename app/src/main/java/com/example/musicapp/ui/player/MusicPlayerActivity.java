@@ -47,6 +47,7 @@ public class MusicPlayerActivity extends BaseActivity<ActivityPlayMusicBinding, 
         song = event.song;
         mViewModel.getMutableLiveData().setValue(song);
         mViewModel.checkFavorite();
+        mViewModel.isLoading.set(false);
         position = event.position;
         isPlaying = event.isPlaying;
         total = event.total;

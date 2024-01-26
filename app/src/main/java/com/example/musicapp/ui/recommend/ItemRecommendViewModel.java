@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.recommend;
 
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.POSITION;
+import static com.example.musicapp.utils.AppConstants.MusicBundleKey.SONG_ID;
 import static com.example.musicapp.utils.AppConstants.MusicBundleKey.TYPE;
 import static com.example.musicapp.utils.AppConstants.MusicPlayerType.RECOMMEND_SONG;
 
@@ -42,7 +43,7 @@ public class ItemRecommendViewModel {
             if(NetworkUtils.isConnected()){
                 Bundle bundle = new Bundle();
                 bundle.putString(TYPE, RECOMMEND_SONG);
-                bundle.putInt(POSITION, position);
+                bundle.putString(SONG_ID, Objects.requireNonNull(song.get()).getId());
 
                 Intent intent = new Intent(view.getContext(), MusicPlayerActivity.class);
                 intent.putExtras(bundle);
@@ -70,7 +71,7 @@ public class ItemRecommendViewModel {
                         Toast.makeText(view.getContext(), "Add song into favorites list success", Toast.LENGTH_LONG).show();
                         view.setVisibility(View.INVISIBLE);
                     } catch (Exception e) {
-                        Log.e("FAVORITES LIST", "can't add song into favorites list");
+                        Log.e("FAVORITES LIST", "ERROR: " + e.getMessage());
                     }
                 }else Toast.makeText(view.getContext(), "No internet", Toast.LENGTH_LONG).show();
             }else Toast.makeText(view.getContext(), "This song already exists", Toast.LENGTH_LONG).show();

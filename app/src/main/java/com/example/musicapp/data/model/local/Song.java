@@ -21,6 +21,7 @@ public class Song implements Serializable, RealmModel {
     private String preview;
 
     private Artist artist;
+    private String type;
 
     public Song() {
     }
@@ -72,6 +73,14 @@ public class Song implements Serializable, RealmModel {
 
     public void setArtist(Artist artist) {
         this.artist = artist;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

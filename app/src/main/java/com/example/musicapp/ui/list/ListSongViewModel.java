@@ -1,11 +1,14 @@
 package com.example.musicapp.ui.list;
 
+import static com.example.musicapp.utils.AppConstants.MusicPlayerType.FAVORITES_SONG;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerType.RECOMMEND_SONG;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerType.SEARCH_SONG;
+import static com.example.musicapp.utils.AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE;
+
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.musicapp.MyApplication;
 import com.example.musicapp.data.AppDataManager;
 import com.example.musicapp.ui.base.BaseViewModel;
-import com.example.musicapp.utils.AppConstants;
 import com.example.musicapp.data.model.local.Song;
 
 import java.util.List;
@@ -23,7 +26,7 @@ public class ListSongViewModel extends BaseViewModel {
     }
 
     public void initData(String dataType, String key){
-        if(dataType.equals(AppConstants.MusicPlayerType.FAVORITES_SONG)){
+        if(dataType.equals(FAVORITES_SONG)){
             getCompositeDisposable().add(mDataManager.mRealmRepository
                     .getAllFavoriteSongFlowable()
                     .asFlowable()
@@ -32,12 +35,22 @@ public class ListSongViewModel extends BaseViewModel {
                     .subscribe(mutableLiveData::setValue));
         }
 
-        if(dataType.equals(AppConstants.MusicPlayerType.RECOMMEND_SONG)){
-            mutableLiveData.setValue(mDataManager.mRealmRepository.getAllRecommendSong());
+        if(dataType.equals(RECOMMEND_SONG)){
+            getCompositeDisposable().add(mDataManager.mRealmRepository
+                    .getAllRecommendSongFlowable()
+                    .asFlowable()
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(mutableLiveData::setValue));
         }
 
-        if(dataType.equals(AppConstants.MusicPlayerType.SEARCH_SONG) || dataType.equals(AppConstants.MusicPlayerType.SEARCH_SONG_OFFLINE)){
-            mutableLiveData.setValue(mDataManager.mRealmRepository.getListFromKey(key));
+        if(dataType.equals(SEARCH_SONG) || dataType.equals(SEARCH_SONG_OFFLINE)){
+            getCompositeDisposable().add(mDataManager.mRealmRepository
+                    .getListFromKey(key)
+                    .asFlowable()
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(mutableLiveData::setValue));
         }
 
     }

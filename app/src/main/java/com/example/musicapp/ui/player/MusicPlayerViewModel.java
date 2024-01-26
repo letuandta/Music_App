@@ -29,6 +29,7 @@ public class MusicPlayerViewModel extends BaseViewModel {
     private final MutableLiveData<Song> mutableLiveData;
 
     public ObservableBoolean isFavorite = new ObservableBoolean(false);
+    public ObservableBoolean isLoading = new ObservableBoolean(true);
 
     public MusicPlayerViewModel(AppDataManager appDataManager) {
         super(appDataManager);
